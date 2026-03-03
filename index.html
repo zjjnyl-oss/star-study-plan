@@ -430,17 +430,18 @@
     <!-- ============ TAB 3: REWARDS ============ -->
     <div id="tab-rewards" class="tab-content">
         <div class="schedule-intro" style="margin-bottom:20px"><h2>🏆 星星奖励商店</h2><p>收集足够的星星，就能兑换奖励哦！</p></div>
-        <div class="reward-card bronze"><h3>🥉 铜牌勇士</h3><div class="stars-needed">每周收集 <strong>21颗</strong> 星星</div><div class="reward-progress"><div class="reward-progress-bar" id="bronzeBar" style="width:0%"></div></div><div class="reward-status" id="bronzeStatus"></div><div style="margin-top:10px;color:#666">🎁 奖励：可以<strong>多玩30分钟</strong>！</div></div>
-        <div class="reward-card silver"><h3>🥈 银牌英雄</h3><div class="stars-needed">每周收集 <strong>28颗</strong> 星星</div><div class="reward-progress"><div class="reward-progress-bar" id="silverBar" style="width:0%"></div></div><div class="reward-status" id="silverStatus"></div><div style="margin-top:10px;color:#666">🎁 奖励：选一个<strong>特别活动</strong>（去公园、看电影、吃大餐……）！</div></div>
-        <div class="reward-card gold"><h3>🥇 金牌冠军</h3><div class="stars-needed">每周收集 <strong>35颗</strong> 星星（满星！）</div><div class="reward-progress"><div class="reward-progress-bar" id="goldBar" style="width:0%"></div></div><div class="reward-status" id="goldStatus"></div><div style="margin-top:10px;color:#666">🎁 奖励：实现一个<strong>小心愿</strong>！（和爸爸妈妈商量）</div></div>
+        <div class="reward-card bronze"><h3>🥉 铜牌勇士</h3><div class="stars-needed">每周收集 <strong>25颗</strong> 星星</div><div class="reward-progress"><div class="reward-progress-bar" id="bronzeBar" style="width:0%"></div></div><div class="reward-status" id="bronzeStatus"></div><div style="margin-top:10px;color:#666">🎁 奖励：可以<strong>多玩30分钟</strong>！</div></div>
+        <div class="reward-card silver"><h3>🥈 银牌英雄</h3><div class="stars-needed">每周收集 <strong>34颗</strong> 星星</div><div class="reward-progress"><div class="reward-progress-bar" id="silverBar" style="width:0%"></div></div><div class="reward-status" id="silverStatus"></div><div style="margin-top:10px;color:#666">🎁 奖励：选一个<strong>特别活动</strong>（去公园、看电影、吃大餐……）！</div></div>
+        <div class="reward-card gold"><h3>🥇 金牌冠军</h3><div class="stars-needed">每周收集 <strong>42颗</strong> 星星（满星！）</div><div class="reward-progress"><div class="reward-progress-bar" id="goldBar" style="width:0%"></div></div><div class="reward-status" id="goldStatus"></div><div style="margin-top:10px;color:#666">🎁 奖励：实现一个<strong>小心愿</strong>！（和爸爸妈妈商量）</div></div>
         <div class="rules-box"><h3>📜 星星收集规则</h3>
-            <div class="rule-item"><div class="rule-num">1</div><div>每天有 <strong>5种</strong> 星星可以收集，周一到周日<strong>每天</strong>都有机会！一周最多 <strong>35颗</strong>！</div></div>
+            <div class="rule-item"><div class="rule-num">1</div><div>每天有 <strong>6种</strong> 星星可以收集，周一到周日<strong>每天</strong>都有机会！一周最多 <strong>42颗</strong>！</div></div>
             <div class="rule-item"><div class="rule-num">2</div><div><strong>⏰ 按时开始</strong>：6点35分之前坐好开始写作业，就能获得1颗星！</div></div>
             <div class="rule-item"><div class="rule-num">3</div><div><strong>🔢 数学完成</strong>：认真做完数学作业（周末为学习任务），就能获得1颗星！</div></div>
             <div class="rule-item"><div class="rule-num">4</div><div><strong>📖 语文完成</strong>：认真做完语文作业（周末为练字/阅读），就能获得1颗星！</div></div>
             <div class="rule-item"><div class="rule-num">5</div><div><strong>✏️ 练字完成</strong>：认真练完字，就能获得1颗星！</div></div>
             <div class="rule-item"><div class="rule-num">6</div><div><strong>🌟 专心勋章</strong>：整个学习过程中没有开小差、不拖拉，就能获得1颗额外的星！</div></div>
-            <div class="rule-item"><div class="rule-num">7</div><div>星星由<strong>自己诚实记录</strong>，爸爸妈妈会帮忙确认。诚实的孩子最棒！</div></div>
+            <div class="rule-item"><div class="rule-num">7</div><div><strong>💯 满分星</strong>：作业做完后爸爸妈妈检查，<strong>质量好、写得认真</strong>就能获得满分星！又快又好才是最棒的！</div></div>
+            <div class="rule-item"><div class="rule-num">8</div><div>星星由<strong>自己诚实记录</strong>，爸爸妈妈会帮忙确认。诚实的孩子最棒！</div></div>
         </div>
     </div>
 
@@ -613,14 +614,14 @@ const VOICE_OVERTIME = [
 
 // ==================== ADVENTURE STATE ====================
 const FREE_DEADLINE_H = 20, FREE_DEADLINE_M = 35; // 8:35 PM hard stop
-let adv = { steps:[], status:[], startTime:[], elapsed:[], currentIdx:-1, timerHandle:null, finished:false, dayType:'weekday', warned30:{}, warned2m:{} };
+let adv = { steps:[], status:[], startTime:[], elapsed:[], currentIdx:-1, timerHandle:null, finished:false, dayType:'weekday', warned30:{}, warned2m:{}, perfectStar:{} };
 
 function getTodayKey() {
     const d = new Date();
     return `adv_${d.getFullYear()}_${String(d.getMonth()+1).padStart(2,'0')}_${String(d.getDate()).padStart(2,'0')}_${adv.dayType}`;
 }
 function saveAdventure() {
-    const data = { status:adv.status, elapsed:adv.elapsed, finished:adv.finished, currentIdx:adv.currentIdx };
+    const data = { status:adv.status, elapsed:adv.elapsed, finished:adv.finished, currentIdx:adv.currentIdx, perfectStar:adv.perfectStar };
     localStorage.setItem(getTodayKey(), JSON.stringify(data));
 }
 function loadAdventure() {
@@ -629,7 +630,7 @@ function loadAdventure() {
     try {
         const d = JSON.parse(raw);
         adv.status = d.status; adv.elapsed = d.elapsed;
-        adv.finished = d.finished; adv.currentIdx = d.currentIdx;
+        adv.finished = d.finished; adv.currentIdx = d.currentIdx; adv.perfectStar = d.perfectStar||{};
         return true;
     } catch(e) { return false; }
 }
@@ -643,7 +644,7 @@ function initAdventure() {
         adv.status = adv.steps.map((_,i) => i===0?'ready':'locked');
         adv.startTime = adv.steps.map(()=>null);
         adv.elapsed = adv.steps.map(()=>0);
-        adv.currentIdx = 0; adv.finished = false;
+        adv.currentIdx = 0; adv.finished = false; adv.perfectStar = {};
     } else {
         adv.startTime = adv.steps.map(()=>null);
         if (!adv.finished) {
@@ -669,6 +670,13 @@ function switchDayType(type) {
     document.getElementById('staticArea').classList.remove('show');
     document.getElementById('adventureArea').style.display = '';
     initAdventure();
+}
+
+function togglePerfectStar(idx) {
+    adv.perfectStar[idx] = !adv.perfectStar[idx];
+    saveAdventure();
+    renderAdventure();
+    if (adv.perfectStar[idx]) { showConfetti(); speak('太棒了！叶柠萱获得满分星！'); }
 }
 
 function resetAdventure() {
@@ -726,6 +734,11 @@ function renderAdventure() {
             html += `<span class="adv-step-duration" style="background:#d5f5e3;color:#27ae60">⏱ ${em}:${String(es).padStart(2,'0')}</span>`;
             if (diff > 0) html += `<span class="adv-step-duration" style="background:#d5f5e3;color:#27ae60">💚省${fmtSec(diff)}</span>`;
             else if (diff < 0) html += `<span class="adv-step-duration" style="background:#fadbd8;color:#e74c3c">🔴超${fmtSec(-diff)}</span>`;
+            if (adv.perfectStar[i]) {
+                html += `<span class="adv-step-duration" style="background:linear-gradient(135deg,#ffd93d,#f093fb);color:#333;cursor:pointer" onclick="togglePerfectStar(${i})">💯 满分星 ✓</span>`;
+            } else {
+                html += `<span class="adv-step-duration" style="background:#fff3cd;color:#e67e22;cursor:pointer;border:2px dashed #f0c040" onclick="togglePerfectStar(${i})">💯 爸妈打满分星</span>`;
+            }
         } else if (st==='completed') {
             html += `<span class="adv-step-duration" style="background:#d5f5e3;color:#27ae60">✅ 完成</span>`;
         } else if (step.type==='free' && !adv.finished) {
@@ -1264,7 +1277,7 @@ let currentWeekOffset = 0;
 const trackItems = [
     {id:'ontime',label:'⏰ 按时开始'},{id:'math',label:'🔢 数学完成'},
     {id:'chinese',label:'📖 语文完成'},{id:'handwriting',label:'✏️ 练字完成'},
-    {id:'focus',label:'🌟 专心勋章'},
+    {id:'focus',label:'🌟 专心勋章'},{id:'perfect',label:'💯 满分星'},
 ];
 function getWeekKey(off) {
     const n=new Date(); n.setDate(n.getDate()+off*7);
@@ -1310,16 +1323,17 @@ function renderTracking() {
     });
     for(let i=0;i<7;i++){
         let c=0; trackItems.forEach(item=>{if(d[i][item.id])c++;});
-        document.getElementById('dayTotal'+i).textContent=c+'/5';
+        document.getElementById('dayTotal'+i).textContent=c+'/'+trackItems.length;
     }
     const total=countWeekStars(wk);
-    document.getElementById('weeklyStarCount').innerHTML=total+' <span>/ 35 ⭐</span>';
+    const maxStars = trackItems.length * 7;
+    document.getElementById('weeklyStarCount').innerHTML=total+` <span>/ ${maxStars} ⭐</span>`;
     const msg=document.getElementById('encourageMsg');
     if(total===0){msg.textContent='🚀 新的一周！加油收集星星吧！';msg.style.background='#f0f0f0';msg.style.color='#999';}
-    else if(total<14){msg.textContent='💪 很棒的开始！继续加油！';msg.style.background='#e8f8f0';msg.style.color='#27ae60';}
-    else if(total<21){msg.textContent='🌟 越来越厉害！铜牌就在眼前！';msg.style.background='#fff3cd';msg.style.color='#e67e22';}
-    else if(total<28){msg.textContent='🥉 铜牌达成！冲击银牌！';msg.style.background='#ffecd2';msg.style.color='#cd7f32';}
-    else if(total<35){msg.textContent='🥈 银牌英雄！满星就差一点！';msg.style.background='#f0f0f0';msg.style.color='#888';}
+    else if(total<17){msg.textContent='💪 很棒的开始！继续加油！';msg.style.background='#e8f8f0';msg.style.color='#27ae60';}
+    else if(total<25){msg.textContent='🌟 越来越厉害！铜牌就在眼前！';msg.style.background='#fff3cd';msg.style.color='#e67e22';}
+    else if(total<34){msg.textContent='🥉 铜牌达成！冲击银牌！';msg.style.background='#ffecd2';msg.style.color='#cd7f32';}
+    else if(total<maxStars){msg.textContent='🥈 银牌英雄！满星就差一点！';msg.style.background='#f0f0f0';msg.style.color='#888';}
     else{msg.textContent='🥇🎉 满星冠军！你是最棒的！！';msg.style.background='linear-gradient(135deg,#ffd93d,#f093fb)';msg.style.color='#333';}
     updateRewards();
 }
@@ -1329,8 +1343,8 @@ function updateRewards() {
     const wk=getWeekKey(currentWeekOffset), total=countWeekStars(wk);
     const bar=(id,th)=>{document.getElementById(id).style.width=Math.min(100,(total/th)*100)+'%';};
     const st=(id,th)=>{const e=document.getElementById(id);if(total>=th){e.textContent='🎉 已达成！';e.style.color='#27ae60';}else{e.textContent=`还差 ${th-total} 颗星`;e.style.color='#999';}};
-    bar('bronzeBar',21); bar('silverBar',28); bar('goldBar',35);
-    st('bronzeStatus',21); st('silverStatus',28); st('goldStatus',35);
+    bar('bronzeBar',25); bar('silverBar',34); bar('goldBar',42);
+    st('bronzeStatus',25); st('silverStatus',34); st('goldStatus',42);
 }
 
 // ==================== DATA EXPORT/IMPORT ====================
