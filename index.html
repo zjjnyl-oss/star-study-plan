@@ -465,7 +465,7 @@
             <li><strong>前两周需要引导</strong>：刚开始执行时，家长帮孩子点"出发"按钮。两周后让孩子自己操作。</li>
             <li><strong>6点半是硬性起点</strong>：一旦到了18:35，无论是否"准备好"，都要开始。</li>
             <li><strong>语音提示代替催促</strong>：系统会自动语音播报，减少家长口头催促带来的亲子冲突。</li>
-            <li><strong>时间银行是核心激励</strong>：提前完成=更多玩耍时间，这个直观的反馈比任何说教都有效。</li>
+            <li><strong>自然后果是核心激励</strong>：早完成=自由王国时间更多（8:35前都是自由时间），这个直观的反馈比任何说教都有效。</li>
             <li><strong>休息时间必须给</strong>：不要因为写得慢就取消休息。休息是下一轮专注的保障。</li>
             <li><strong>灵活调整</strong>：作业多时可调整科目顺序，但总框架不变（学习→休息→学习→休息→学习→自由时间）。</li>
         </ul></div>
@@ -506,7 +506,7 @@ const WEEKDAY_STEPS = [
       voice:'叶柠萱！冒险开始啦！先把文具准备好，我们马上出发！', ak:'wd_prepare', check:null },
     { id:'math', emoji:'🔢', name:'数学王国', min:20, type:'study', color:'#6c63ff',
       desc:'专心做数学作业，遇到不会的先跳过，做完再回来想。',
-      voice:'叶柠萱！数学王国，出发！你一定行的，认真做题，加油加油！', ak:'wd_math', check:'做完后找<b>爸爸</b>检查！' },
+      voice:'叶柠萱！数学王国，出发！你一定可以的，认真做题，加油加油！', ak:'wd_math', check:'做完后找<b>爸爸</b>检查！' },
     { id:'break1', emoji:'🎮', name:'快乐休息', min:10, type:'fixed', color:'#ff9f43',
       desc:'可以玩玩具、画画、跳舞……想干嘛就干嘛！', tip:'听到提示就准备下一关哦！',
       voice:'叶柠萱，辛苦啦！休息十分钟，想玩什么就玩什么吧！', ak:'wd_break1', check:null },
@@ -917,19 +917,18 @@ function showEncouragement(step, doneIdx, nextIdx) {
         const elapsed = adv.elapsed[doneIdx];
         const planned = step.min * 60;
         const diff = planned - elapsed;
-        let timeReport = '';
         if (diff > 10) {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，省下了 ${fmtSec(diff)}！💚`;
-            timeReport = `叶柠萱，${step.name}用了${fmtSec(elapsed)}，比计划快了${fmtSec(diff)}！效率真高！`;
-            playAudio('early_' + (Math.floor(Math.random()*8) + 1), undefined, () => speak(timeReport));
+            const tmpl = VOICE_EARLY[Math.floor(Math.random()*VOICE_EARLY.length)].replace('{t}', fmtSec(diff));
+            speak(tmpl + `。${step.name}用了${fmtSec(elapsed)}，比计划快了${fmtSec(diff)}！效率超高！`);
         } else if (diff >= -10) {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，正好按时完成！👍`;
-            timeReport = `叶柠萱，${step.name}用了${fmtSec(elapsed)}，刚刚好按时完成！棒棒的！`;
-            playAudio('ontime_' + (Math.floor(Math.random()*6) + 1), undefined, () => speak(timeReport));
+            const tmpl = VOICE_ONTIME[Math.floor(Math.random()*VOICE_ONTIME.length)];
+            speak(tmpl + `。${step.name}用了${fmtSec(elapsed)}，刚刚好按时完成！`);
         } else {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，超时了 ${fmtSec(-diff)} 🔴`;
-            timeReport = `叶柠萱，${step.name}用了${fmtSec(elapsed)}，超时了${fmtSec(-diff)}，下次加油哦！`;
-            playAudio('overtime_' + (Math.floor(Math.random()*4) + 1), undefined, () => speak(timeReport));
+            const tmpl = VOICE_OVERTIME[Math.floor(Math.random()*VOICE_OVERTIME.length)].replace('{t}', fmtSec(-diff));
+            speak(tmpl + `。${step.name}用了${fmtSec(elapsed)}，超时了${fmtSec(-diff)}。`);
         }
     } else {
         playAudio('enc_' + (Math.floor(Math.random()*10) + 1));
