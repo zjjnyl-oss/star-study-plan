@@ -502,54 +502,54 @@
 const WEEKDAY_STEPS = [
     { id:'prepare', emoji:'🎒', name:'准备起航', min:5, type:'fixed', color:'#a29bfe',
       desc:'吃完晚饭啦！洗洗小手，把文具准备好！', tip:'把铅笔、橡皮、作业本都拿出来！',
-      voice:'叶柠萱！冒险开始啦！先把文具准备好，我们马上出发！', check:null },
+      voice:'叶柠萱！冒险开始啦！先把文具准备好，我们马上出发！', ak:'wd_prepare', check:null },
     { id:'math', emoji:'🔢', name:'数学王国', min:20, type:'study', color:'#6c63ff',
       desc:'专心做数学作业，遇到不会的先跳过，做完再回来想。',
-      voice:'叶柠萱！数学王国，出发！你一定行的，认真做题，加油加油！', check:'做完后找<b>爸爸</b>检查！' },
+      voice:'叶柠萱！数学王国，出发！你一定行的，认真做题，加油加油！', ak:'wd_math', check:'做完后找<b>爸爸</b>检查！' },
     { id:'break1', emoji:'🎮', name:'快乐休息', min:10, type:'fixed', color:'#ff9f43',
       desc:'可以玩玩具、画画、跳舞……想干嘛就干嘛！', tip:'听到提示就准备下一关哦！',
-      voice:'叶柠萱，辛苦啦！休息十分钟，想玩什么就玩什么吧！', check:null },
+      voice:'叶柠萱，辛苦啦！休息十分钟，想玩什么就玩什么吧！', ak:'wd_break1', check:null },
     { id:'chinese', emoji:'📖', name:'语文乐园', min:20, type:'study', color:'#ff6b9d',
       desc:'专心做语文作业，认真读题目，一笔一划写漂亮！',
-      voice:'叶柠萱！语文乐园出发啦！认真读题，好好写字，你可以的！', check:'做完后找<b>妈妈</b>检查！' },
+      voice:'叶柠萱！语文乐园出发啦！认真读题，好好写字，你可以的！', ak:'wd_chinese', check:'做完后找<b>妈妈</b>检查！' },
     { id:'break2', emoji:'🎨', name:'快乐休息', min:10, type:'fixed', color:'#ff9f43',
       desc:'喝点水，上个厕所，活动活动！',
-      voice:'叶柠萱，又到休息时间啦！喝点水，活动活动，马上就快全部完成了！', check:null },
+      voice:'叶柠萱，又到休息时间啦！喝点水，活动活动，马上就快全部完成了！', ak:'wd_break2', check:null },
     { id:'writing', emoji:'✏️', name:'练字小屋', min:20, type:'study', color:'#2ed573',
       desc:'一笔一划，认真练字。比昨天写得更漂亮！', tip:'坐端正、握好笔、慢慢写！',
-      voice:'叶柠萱！最后一个学习任务啦！写出最漂亮的字，加油，马上就能自由玩耍了！', check:'自己先检查，再给爸爸妈妈看！' },
+      voice:'叶柠萱！最后一个学习任务啦！写出最漂亮的字，加油，马上就能自由玩耍了！', ak:'wd_writing', check:'自己先检查，再给爸爸妈妈看！' },
     { id:'free', emoji:'🌈', name:'自由王国', min:40, type:'free', color:'#ffd93d',
       desc:'🎉 作业全部完成！看动画、玩游戏、画画……随你选！',
       voice:'', check:null },
     { id:'story', emoji:'📚', name:'故事时光', min:15, type:'fixed', color:'#a55eea',
       desc:'选一本喜欢的书，安静地读一读～',
-      voice:'叶柠萱，故事时间到！选一本你最喜欢的书，安安静静地读一读吧！', check:null },
+      voice:'叶柠萱，故事时间到！选一本你最喜欢的书，安安静静地读一读吧！', ak:'wd_story', check:null },
     { id:'sleep', emoji:'🌙', name:'晚安准备', min:10, type:'fixed', color:'#3d3d8e',
       desc:'收拾书包 → 准备明天的衣服 → 去洗漱！', tip:'21:30 准时上床，做个好梦！',
-      voice:'叶柠萱，今天真棒！收拾好书包，准备洗漱睡觉，明天又是元气满满的一天！', check:null },
+      voice:'叶柠萱，今天真棒！收拾好书包，准备洗漱睡觉，明天又是元气满满的一天！', ak:'wd_sleep', check:null },
 ];
 const WEEKEND_STEPS = [
     { id:'prepare', emoji:'🎒', name:'准备起航', min:5, type:'fixed', color:'#a29bfe',
       desc:'吃完晚饭，准备好学习用品！',
-      voice:'叶柠萱！周末冒险也要准时出发！很快就能做完，然后就有超长自由时间啦！', check:null },
+      voice:'叶柠萱！周末冒险也要准时出发！很快就能做完，然后就有超长自由时间啦！', ak:'we_prepare', check:null },
     { id:'study', emoji:'📝', name:'周末学习', min:20, type:'study', color:'#6c63ff',
       desc:'做周末作业，或复习这周学的内容。',
-      voice:'叶柠萱！周末学习开始！就二十分钟，认真做，很快就完成啦！', check:'做完后找爸爸或妈妈检查！' },
+      voice:'叶柠萱！周末学习开始！就二十分钟，认真做，很快就完成啦！', ak:'we_study', check:'做完后找爸爸或妈妈检查！' },
     { id:'break1', emoji:'🎮', name:'快乐休息', min:10, type:'fixed', color:'#ff9f43',
       desc:'休息一下，喝点水，活动活动～',
-      voice:'叶柠萱，辛苦啦！休息十分钟，放松一下吧！', check:null },
+      voice:'叶柠萱，辛苦啦！休息十分钟，放松一下吧！', ak:'we_break1', check:null },
     { id:'reading', emoji:'✏️📖', name:'练字或阅读', min:20, type:'study', color:'#2ed573',
       desc:'选一样：练字 ✏️ 或者读好书 📖',
-      voice:'叶柠萱！练字或者阅读，选一个你喜欢的！做完就有超级自由时间啦！', check:'自己先检查，再给爸爸妈妈看看！' },
+      voice:'叶柠萱！练字或者阅读，选一个你喜欢的！做完就有超级自由时间啦！', ak:'we_reading', check:'自己先检查，再给爸爸妈妈看看！' },
     { id:'free', emoji:'🌈👑', name:'超级自由王国', min:70, type:'free', color:'#ffd93d',
       desc:'🎉 周末自由时间超～级～长！随便你怎么玩！',
       voice:'', check:null },
     { id:'story', emoji:'📚', name:'故事时光', min:15, type:'fixed', color:'#a55eea',
       desc:'安静下来，读本书或听故事～',
-      voice:'叶柠萱，故事时间到！选一本你最喜欢的书吧！', check:null },
+      voice:'叶柠萱，故事时间到！选一本你最喜欢的书吧！', ak:'we_story', check:null },
     { id:'sleep', emoji:'🌙', name:'晚安准备', min:10, type:'fixed', color:'#3d3d8e',
       desc:'周末也要早睡哦！早睡早起身体棒！',
-      voice:'叶柠萱，今天表现真棒！准备洗漱睡觉，明天又是快乐的一天！', check:null },
+      voice:'叶柠萱，今天表现真棒！准备洗漱睡觉，明天又是快乐的一天！', ak:'we_sleep', check:null },
 ];
 
 const ENCOURAGEMENTS = [
@@ -785,13 +785,10 @@ function startStep(idx) {
 
     const step = adv.steps[idx];
     if (step.type === 'free') {
-        const adj = Math.max(5, step.min + Math.floor(adv.timeBankSec/60));
-        const msg = adv.timeBankSec > 0
-            ? `叶柠萱！耶！太棒了！自由王国开始！因为你今天做得又快又好，可以玩整整${adj}分钟！尽情玩吧，你值得的！`
-            : adv.timeBankSec < 0
-            ? `叶柠萱，自由王国开始啦！今天有${adj}分钟自由时间哦！下次写快一点，自由时间就会更长啦！`
-            : `叶柠萱！自由王国开始！${adj}分钟自由时间，想做什么就做什么，开心地玩吧！`;
-        speak(msg);
+        const fk = adv.timeBankSec > 0 ? 'free_good' : adv.timeBankSec < 0 ? 'free_slow' : 'free_normal';
+        playAudio(fk);
+    } else if (step.ak) {
+        playAudio(step.ak);
     } else {
         speak(step.voice);
     }
@@ -875,15 +872,15 @@ function updateTimer() {
     // Study steps: voice warning at 30 seconds remaining
     if (step.type === 'study' && remain <= 30 && remain > 28 && !adv.warned30[idx]) {
         adv.warned30[idx] = true;
-        const msg = STUDY_30S_WARNINGS[Math.floor(Math.random()*STUDY_30S_WARNINGS.length)];
-        speak(msg);
+        const n = Math.floor(Math.random()*5) + 1;
+        playAudio('warn30_' + n);
     }
 
-    // Break (fixed type with "break" id) and free steps: voice warning at 2 minutes remaining, repeat 3 times louder
+    // Break (fixed type with "break" id) and free steps: voice warning at 2 minutes remaining, repeat 3 times
     const isBreakOrFree = (step.type === 'free') || (step.type === 'fixed' && /^break/.test(step.id));
     if (isBreakOrFree && remain <= 120 && remain > 118 && !adv.warned2m[idx]) {
         adv.warned2m[idx] = true;
-        speakRepeat(BREAK_2M_WARNING, 3, 1);
+        playAudioRepeat('warn2m', 3, 1);
     }
 }
 
@@ -900,18 +897,16 @@ function showEncouragement(step, doneIdx, nextIdx) {
         const diff = planned - elapsed;
         if (diff > 10) {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，省下了 ${fmtSec(diff)}！💚`;
-            const tpl = VOICE_EARLY[Math.floor(Math.random()*VOICE_EARLY.length)];
-            speak(tpl.replace('{t}', fmtSec(diff)));
+            playAudio('early_' + (Math.floor(Math.random()*8) + 1));
         } else if (diff >= -10) {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，正好按时完成！👍`;
-            speak(VOICE_ONTIME[Math.floor(Math.random()*VOICE_ONTIME.length)]);
+            playAudio('ontime_' + (Math.floor(Math.random()*6) + 1));
         } else {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，超时了 ${fmtSec(-diff)} 🔴`;
-            const tpl = VOICE_OVERTIME[Math.floor(Math.random()*VOICE_OVERTIME.length)];
-            speak(tpl.replace('{t}', fmtSec(-diff)));
+            playAudio('overtime_' + (Math.floor(Math.random()*4) + 1));
         }
     } else {
-        speak('叶柠萱，' + enc.text + '，继续加油！');
+        playAudio('enc_' + (Math.floor(Math.random()*10) + 1));
     }
 
     const nextStep = adv.steps[nextIdx];
@@ -949,7 +944,7 @@ function showVictory() {
 
     document.getElementById('vicSummary').innerHTML = summary;
     document.getElementById('vicOverlay').classList.add('show');
-    speak('叶柠萱！太棒了！恭喜你！今天的冒险全部完成！你真的太厉害了，是最棒的小星星！好好休息，明天继续加油哦！');
+    playAudio('victory');
 }
 function closeVictory() {
     document.getElementById('vicOverlay').classList.remove('show');
@@ -1054,10 +1049,38 @@ function toggleVoicePanel() {
 }
 
 function testVoice() {
-    speak('叶柠萱，你好！我是你的冒险小助手！准备好了吗？');
+    playAudio('test_hello');
 }
 function testVoiceLong() {
-    speak('叶柠萱！哇！太厉害了！提前五分钟完成！你的自由时间又变多啦！继续加油！');
+    playAudio('test_encourage');
+}
+
+// Audio playback system: pre-recorded high-quality voices with browser TTS fallback
+let currentAudio = null;
+function playAudio(key, vol) {
+    try {
+        if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+        const a = new Audio('voices/' + key + '.mp3');
+        a.volume = (vol !== undefined) ? vol : 1;
+        currentAudio = a;
+        a.play().catch(() => {});
+    } catch(e) {}
+}
+
+function playAudioRepeat(key, times, vol) {
+    try {
+        if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+        let count = 0;
+        function playNext() {
+            if (count >= times) return;
+            const a = new Audio('voices/' + key + '.mp3');
+            a.volume = (vol !== undefined) ? vol : 1;
+            currentAudio = a;
+            a.onended = () => { count++; playNext(); };
+            a.play().catch(() => {});
+        }
+        playNext();
+    } catch(e) {}
 }
 
 function speak(text, vol) {
@@ -1067,7 +1090,6 @@ function speak(text, vol) {
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'zh-CN';
         u.volume = (vol !== undefined) ? vol : 1;
-
         if (selectedVoice) {
             u.voice = selectedVoice;
             if (/online|natural/i.test(selectedVoice.name)) {
@@ -1090,16 +1112,8 @@ function speakRepeat(text, times, vol) {
             const u = new SpeechSynthesisUtterance(text);
             u.lang = 'zh-CN';
             u.volume = (vol !== undefined) ? vol : 1;
-            if (selectedVoice) {
-                u.voice = selectedVoice;
-                if (/online|natural/i.test(selectedVoice.name)) {
-                    u.rate = 1.0; u.pitch = 1.05;
-                } else {
-                    u.rate = 0.88; u.pitch = 0.9;
-                }
-            } else {
-                u.rate = 0.88; u.pitch = 0.9;
-            }
+            if (selectedVoice) { u.voice = selectedVoice; u.rate = 0.88; u.pitch = 0.9; }
+            else { u.rate = 0.88; u.pitch = 0.9; }
             speechSynthesis.speak(u);
         }
     } catch(e) {}
