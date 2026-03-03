@@ -917,19 +917,21 @@ function showEncouragement(step, doneIdx, nextIdx) {
         const elapsed = adv.elapsed[doneIdx];
         const planned = step.min * 60;
         const diff = planned - elapsed;
+        let audioKey = '', timeReport = '';
         if (diff > 10) {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，省下了 ${fmtSec(diff)}！💚`;
-            const tmpl = VOICE_EARLY[Math.floor(Math.random()*VOICE_EARLY.length)].replace('{t}', fmtSec(diff));
-            speak(tmpl + `。${step.name}用了${fmtSec(elapsed)}，比计划快了${fmtSec(diff)}！效率超高！`);
+            audioKey = 'early_' + (Math.floor(Math.random()*8) + 1);
+            timeReport = `${step.name}用了${fmtSec(elapsed)}，比计划快了${fmtSec(diff)}！效率超高！`;
         } else if (diff >= -10) {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，正好按时完成！👍`;
-            const tmpl = VOICE_ONTIME[Math.floor(Math.random()*VOICE_ONTIME.length)];
-            speak(tmpl + `。${step.name}用了${fmtSec(elapsed)}，刚刚好按时完成！`);
+            audioKey = 'ontime_' + (Math.floor(Math.random()*6) + 1);
+            timeReport = `${step.name}用了${fmtSec(elapsed)}，刚刚好按时完成！`;
         } else {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，超时了 ${fmtSec(-diff)} 🔴`;
-            const tmpl = VOICE_OVERTIME[Math.floor(Math.random()*VOICE_OVERTIME.length)].replace('{t}', fmtSec(-diff));
-            speak(tmpl + `。${step.name}用了${fmtSec(elapsed)}，超时了${fmtSec(-diff)}。`);
+            audioKey = 'overtime_' + (Math.floor(Math.random()*4) + 1);
+            timeReport = `${step.name}用了${fmtSec(elapsed)}，超时了${fmtSec(-diff)}，下次加油！`;
         }
+        playAudio(audioKey, undefined, () => speak(timeReport));
     } else {
         playAudio('enc_' + (Math.floor(Math.random()*10) + 1));
     }
@@ -1085,15 +1087,44 @@ function testVoiceLong() {
 
 // Audio playback system: pre-recorded high-quality voices with browser TTS fallback
 let currentAudio = null;
+let audioQueue = [];
+let audioPlaying = false;
+
 function playAudio(key, vol, onEnd) {
+    if (audioPlaying) {
+        audioQueue.push({ key, vol, onEnd });
+        return;
+    }
+    _playNow(key, vol, onEnd);
+}
+
+function _playNow(key, vol, onEnd) {
     try {
         if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+        audioPlaying = true;
         const a = new Audio('voices/' + key + '.mp3');
         a.volume = (vol !== undefined) ? vol : 1;
         currentAudio = a;
-        if (onEnd) a.onended = onEnd;
-        a.play().catch(() => { if (onEnd) onEnd(); });
-    } catch(e) { if (onEnd) onEnd(); }
+        a.onended = () => {
+            audioPlaying = false;
+            currentAudio = null;
+            if (onEnd) onEnd();
+            _processQueue();
+        };
+        a.onerror = () => {
+            audioPlaying = false;
+            currentAudio = null;
+            if (onEnd) onEnd();
+            _processQueue();
+        };
+        a.play().catch(() => { audioPlaying = false; if (onEnd) onEnd(); _processQueue(); });
+    } catch(e) { audioPlaying = false; if (onEnd) onEnd(); _processQueue(); }
+}
+
+function _processQueue() {
+    if (audioQueue.length === 0) return;
+    const next = audioQueue.shift();
+    _playNow(next.key, next.vol, next.onEnd);
 }
 
 function playAudioRepeat(key, times, vol) {
@@ -1115,6 +1146,10 @@ function playAudioRepeat(key, times, vol) {
 function speak(text, vol) {
     try {
         if (!('speechSynthesis' in window)) return;
+        if (audioPlaying) {
+            setTimeout(() => speak(text, vol), 500);
+            return;
+        }
         speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'zh-CN';
