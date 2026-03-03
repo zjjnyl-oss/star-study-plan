@@ -612,14 +612,14 @@ const VOICE_OVERTIME = [
 ];
 
 // ==================== ADVENTURE STATE ====================
-let adv = { steps:[], status:[], startTime:[], elapsed:[], currentIdx:-1, timeBankSec:0, timerHandle:null, finished:false, dayType:'weekday', warned30:{}, warned2m:{} };
+let adv = { steps:[], status:[], startTime:[], elapsed:[], currentIdx:-1, timeBankSec:0, timerHandle:null, finished:false, dayType:'weekday', warned30:{}, warned2m:{}, lateDeducted:false };
 
 function getTodayKey() {
     const d = new Date();
     return `adv_${d.getFullYear()}_${String(d.getMonth()+1).padStart(2,'0')}_${String(d.getDate()).padStart(2,'0')}_${adv.dayType}`;
 }
 function saveAdventure() {
-    const data = { status:adv.status, elapsed:adv.elapsed, timeBankSec:adv.timeBankSec, finished:adv.finished, currentIdx:adv.currentIdx };
+    const data = { status:adv.status, elapsed:adv.elapsed, timeBankSec:adv.timeBankSec, finished:adv.finished, currentIdx:adv.currentIdx, lateDeducted:adv.lateDeducted };
     localStorage.setItem(getTodayKey(), JSON.stringify(data));
 }
 function loadAdventure() {
@@ -629,7 +629,7 @@ function loadAdventure() {
         const d = JSON.parse(raw);
         adv.status = d.status; adv.elapsed = d.elapsed;
         adv.timeBankSec = d.timeBankSec||0; adv.finished = d.finished;
-        adv.currentIdx = d.currentIdx;
+        adv.currentIdx = d.currentIdx; adv.lateDeducted = d.lateDeducted||false;
         return true;
     } catch(e) { return false; }
 }
@@ -643,7 +643,7 @@ function initAdventure() {
         adv.status = adv.steps.map((_,i) => i===0?'ready':'locked');
         adv.startTime = adv.steps.map(()=>null);
         adv.elapsed = adv.steps.map(()=>0);
-        adv.currentIdx = 0; adv.timeBankSec = 0; adv.finished = false;
+        adv.currentIdx = 0; adv.timeBankSec = 0; adv.finished = false; adv.lateDeducted = false;
     } else {
         adv.startTime = adv.steps.map(()=>null);
         if (!adv.finished) {
@@ -695,7 +695,7 @@ function renderAdventure() {
         const mm = Math.floor(absSec/60), ss = absSec%60;
         const timeStr = ss>0 ? `${mm}分${ss}秒` : `${mm}分钟`;
         const freeMins = adv.steps[freeIdx].min;
-        const adjusted = freeMins + Math.floor(adv.timeBankSec/60);
+        const adjusted = Math.max(5, freeMins + Math.floor(adv.timeBankSec/60));
         const cls = adv.timeBankSec>0?'positive':'negative';
         html += `<div class="adv-time-bank show ${cls}">`;
         if (adv.timeBankSec > 0) {
@@ -703,6 +703,7 @@ function renderAdventure() {
         } else {
             html += `🏦 时间银行：-${timeStr} → 🌈 自由王国变成 <strong>${adjusted}分钟</strong>`;
         }
+        if (adv.lateDeducted) html += `<br>⏰ 包含迟到扣除时间`;
         html += '</div>';
     }
 
@@ -715,7 +716,7 @@ function renderAdventure() {
         html += `<span class="adv-step-emoji">${step.emoji}</span>`;
         html += `<span class="adv-step-name">${step.name}</span>`;
 
-        if (st==='completed' && step.type==='study') {
+        if (st==='completed' && step.type!=='free') {
             const el = adv.elapsed[i], planned = step.min*60, diff = planned - el;
             const em = Math.floor(el/60), es = el%60;
             html += `<span class="adv-step-duration" style="background:#d5f5e3;color:#27ae60">⏱ ${em}:${String(es).padStart(2,'0')}</span>`;
@@ -775,6 +776,18 @@ function fmtSec(s) {
 
 // ==================== STEP ACTIONS ====================
 function startStep(idx) {
+    // Late start penalty: if first step starts after 18:35, deduct from time bank
+    if (idx === 0 && !adv.lateDeducted) {
+        const now = new Date();
+        const deadlineMin = adv.dayType === 'weekend' ? 18*60+35 : 18*60+35;
+        const nowMin = now.getHours()*60 + now.getMinutes();
+        if (nowMin > deadlineMin) {
+            const lateSec = (nowMin - deadlineMin) * 60;
+            adv.timeBankSec -= lateSec;
+            adv.lateDeducted = true;
+        }
+    }
+
     adv.status[idx] = 'timing';
     adv.startTime[idx] = Date.now();
     adv.elapsed[idx] = 0;
@@ -805,7 +818,7 @@ function completeStep(idx) {
     adv.elapsed[idx] = elapsedSec;
     adv.status[idx] = 'completed';
 
-    if (step.type === 'study') {
+    if (step.type !== 'free') {
         const planned = step.min * 60;
         const diff = planned - elapsedSec;
         adv.timeBankSec += diff;
@@ -928,16 +941,16 @@ function showVictory() {
     let summary = '';
     let totalStudy = 0;
     adv.steps.forEach((s,i) => {
-        if (s.type==='study') {
-            totalStudy += adv.elapsed[i];
-            const planned = s.min*60, diff = planned - adv.elapsed[i];
-            summary += `${s.emoji} ${s.name}：${fmtSec(adv.elapsed[i])}`;
-            if (diff>0) summary += ` <span style="color:#2ed573">（省${fmtSec(diff)}）</span>`;
-            else if (diff<0) summary += ` <span style="color:#ff6b6b">（超${fmtSec(-diff)}）</span>`;
-            summary += '<br>';
-        }
+        if (s.type === 'free') return;
+        if (s.type === 'study') totalStudy += adv.elapsed[i];
+        const planned = s.min*60, diff = planned - adv.elapsed[i];
+        summary += `${s.emoji} ${s.name}：${fmtSec(adv.elapsed[i])}`;
+        if (diff>0) summary += ` <span style="color:#2ed573">（省${fmtSec(diff)}）</span>`;
+        else if (diff<0) summary += ` <span style="color:#ff6b6b">（超${fmtSec(-diff)}）</span>`;
+        summary += '<br>';
     });
     summary += `<br>📝 总学习时间：${fmtSec(totalStudy)}`;
+    if (adv.lateDeducted) summary += `<br>⏰ 今天迟到了，自由王国被扣时间咯！下次要准时出发哦！`;
     if (adv.timeBankSec > 0) summary += `<br>💚 总共省下：${fmtSec(adv.timeBankSec)}`;
     else if (adv.timeBankSec < 0) summary += `<br>🔴 总共超时：${fmtSec(-adv.timeBankSec)}`;
     else summary += '<br>⏰ 刚刚好按时完成！';
