@@ -612,14 +612,15 @@ const VOICE_OVERTIME = [
 ];
 
 // ==================== ADVENTURE STATE ====================
-let adv = { steps:[], status:[], startTime:[], elapsed:[], currentIdx:-1, timeBankSec:0, timerHandle:null, finished:false, dayType:'weekday', warned30:{}, warned2m:{}, lateDeducted:false };
+const FREE_DEADLINE_H = 20, FREE_DEADLINE_M = 35; // 8:35 PM hard stop
+let adv = { steps:[], status:[], startTime:[], elapsed:[], currentIdx:-1, timerHandle:null, finished:false, dayType:'weekday', warned30:{}, warned2m:{} };
 
 function getTodayKey() {
     const d = new Date();
     return `adv_${d.getFullYear()}_${String(d.getMonth()+1).padStart(2,'0')}_${String(d.getDate()).padStart(2,'0')}_${adv.dayType}`;
 }
 function saveAdventure() {
-    const data = { status:adv.status, elapsed:adv.elapsed, timeBankSec:adv.timeBankSec, finished:adv.finished, currentIdx:adv.currentIdx, lateDeducted:adv.lateDeducted };
+    const data = { status:adv.status, elapsed:adv.elapsed, finished:adv.finished, currentIdx:adv.currentIdx };
     localStorage.setItem(getTodayKey(), JSON.stringify(data));
 }
 function loadAdventure() {
@@ -628,8 +629,7 @@ function loadAdventure() {
     try {
         const d = JSON.parse(raw);
         adv.status = d.status; adv.elapsed = d.elapsed;
-        adv.timeBankSec = d.timeBankSec||0; adv.finished = d.finished;
-        adv.currentIdx = d.currentIdx; adv.lateDeducted = d.lateDeducted||false;
+        adv.finished = d.finished; adv.currentIdx = d.currentIdx;
         return true;
     } catch(e) { return false; }
 }
@@ -643,7 +643,7 @@ function initAdventure() {
         adv.status = adv.steps.map((_,i) => i===0?'ready':'locked');
         adv.startTime = adv.steps.map(()=>null);
         adv.elapsed = adv.steps.map(()=>0);
-        adv.currentIdx = 0; adv.timeBankSec = 0; adv.finished = false; adv.lateDeducted = false;
+        adv.currentIdx = 0; adv.finished = false;
     } else {
         adv.startTime = adv.steps.map(()=>null);
         if (!adv.finished) {
@@ -652,6 +652,12 @@ function initAdventure() {
         }
     }
     renderAdventure();
+    // Refresh free kingdom countdown every 30s
+    if (!adv.renderInterval) {
+        adv.renderInterval = setInterval(() => {
+            if (!adv.finished && adv.status.indexOf('timing') < 0) renderAdventure();
+        }, 30000);
+    }
 }
 
 function switchDayType(type) {
@@ -688,23 +694,21 @@ function renderAdventure() {
     const doneCount = adv.status.filter(s=>s==='completed').length;
     html += `<div class="adv-progress-label">第 ${Math.min(doneCount+1, adv.steps.length)} / ${adv.steps.length} 关</div></div>`;
 
-    // Time bank
+    // Real-time free kingdom countdown
     const freeIdx = adv.steps.findIndex(s=>s.type==='free');
-    if (adv.timeBankSec !== 0 && freeIdx >= 0) {
-        const absSec = Math.abs(adv.timeBankSec);
-        const mm = Math.floor(absSec/60), ss = absSec%60;
-        const timeStr = ss>0 ? `${mm}分${ss}秒` : `${mm}分钟`;
-        const freeMins = adv.steps[freeIdx].min;
-        const adjusted = Math.max(5, freeMins + Math.floor(adv.timeBankSec/60));
-        const cls = adv.timeBankSec>0?'positive':'negative';
-        html += `<div class="adv-time-bank show ${cls}">`;
-        if (adv.timeBankSec > 0) {
-            html += `🏦 时间银行：+${timeStr} → 🌈 自由王国变成 <strong>${adjusted}分钟</strong>！`;
-        } else {
-            html += `🏦 时间银行：-${timeStr} → 🌈 自由王国变成 <strong>${adjusted}分钟</strong>`;
+    if (freeIdx >= 0 && !adv.finished) {
+        const freeStatus = adv.status[freeIdx];
+        if (freeStatus !== 'completed') {
+            const freeMin = Math.round(getFreeSec() / 60);
+            const base = adv.steps[freeIdx].min;
+            const cls = freeMin > base ? 'positive' : freeMin < base ? 'negative' : 'zero';
+            html += `<div class="adv-time-bank show ${cls}">`;
+            html += `🕐 现在完成学习 → 🌈 自由王国有 <strong>${freeMin}分钟</strong>`;
+            if (freeMin > base) html += `（比标准多${freeMin - base}分钟！）`;
+            else if (freeMin < base) html += `（比标准少${base - freeMin}分钟）`;
+            html += `<br><small>⏰ 自由王国截止：${FREE_DEADLINE_H>12?FREE_DEADLINE_H-12:FREE_DEADLINE_H}:${String(FREE_DEADLINE_M).padStart(2,'0')} PM</small>`;
+            html += '</div>';
         }
-        if (adv.lateDeducted) html += `<br>⏰ 包含迟到扣除时间`;
-        html += '</div>';
     }
 
     // Step cards
@@ -716,20 +720,19 @@ function renderAdventure() {
         html += `<span class="adv-step-emoji">${step.emoji}</span>`;
         html += `<span class="adv-step-name">${step.name}</span>`;
 
-        const freeI = adv.steps.findIndex(s=>s.type==='free');
-        const affectsBank = step.type!=='free' && i < freeI;
-        if (st==='completed' && affectsBank) {
+        if (st==='completed' && step.type==='study') {
             const el = adv.elapsed[i], planned = step.min*60, diff = planned - el;
             const em = Math.floor(el/60), es = el%60;
             html += `<span class="adv-step-duration" style="background:#d5f5e3;color:#27ae60">⏱ ${em}:${String(es).padStart(2,'0')}</span>`;
-            if (diff > 0) html += `<span class="adv-step-duration" style="background:#d5f5e3;color:#27ae60">💚+${fmtSec(diff)}</span>`;
-            else if (diff < 0) html += `<span class="adv-step-duration" style="background:#fadbd8;color:#e74c3c">🔴-${fmtSec(-diff)}</span>`;
+            if (diff > 0) html += `<span class="adv-step-duration" style="background:#d5f5e3;color:#27ae60">💚省${fmtSec(diff)}</span>`;
+            else if (diff < 0) html += `<span class="adv-step-duration" style="background:#fadbd8;color:#e74c3c">🔴超${fmtSec(-diff)}</span>`;
         } else if (st==='completed') {
             html += `<span class="adv-step-duration" style="background:#d5f5e3;color:#27ae60">✅ 完成</span>`;
+        } else if (step.type==='free' && !adv.finished) {
+            const freeMin = Math.round(getFreeSec() / 60);
+            html += `<span class="adv-step-duration">约${freeMin}分钟</span>`;
         } else {
-            let dur = step.min;
-            if (step.type==='free' && adv.timeBankSec!==0) dur = Math.max(5, dur + Math.floor(adv.timeBankSec/60));
-            html += `<span class="adv-step-duration">${dur}分钟${step.type==='free'&&adv.timeBankSec>0?'！':''}</span>`;
+            html += `<span class="adv-step-duration">${step.min}分钟</span>`;
         }
         html += '</div>';
 
@@ -776,20 +779,15 @@ function fmtSec(s) {
     return `${sec}秒`;
 }
 
+// ==================== HELPERS ====================
+function getFreeSec() {
+    const now = new Date();
+    const deadlineMs = new Date(now.getFullYear(), now.getMonth(), now.getDate(), FREE_DEADLINE_H, FREE_DEADLINE_M, 0).getTime();
+    return Math.max(300, Math.round((deadlineMs - now.getTime()) / 1000));
+}
+
 // ==================== STEP ACTIONS ====================
 function startStep(idx) {
-    // Late start penalty: if first step starts after 18:35, deduct from time bank
-    if (idx === 0 && !adv.lateDeducted) {
-        const now = new Date();
-        const deadlineMin = adv.dayType === 'weekend' ? 18*60+35 : 18*60+35;
-        const nowMin = now.getHours()*60 + now.getMinutes();
-        if (nowMin > deadlineMin) {
-            const lateSec = (nowMin - deadlineMin) * 60;
-            adv.timeBankSec -= lateSec;
-            adv.lateDeducted = true;
-        }
-    }
-
     adv.status[idx] = 'timing';
     adv.startTime[idx] = Date.now();
     adv.elapsed[idx] = 0;
@@ -800,7 +798,9 @@ function startStep(idx) {
 
     const step = adv.steps[idx];
     if (step.type === 'free') {
-        const fk = adv.timeBankSec > 0 ? 'free_good' : adv.timeBankSec < 0 ? 'free_slow' : 'free_normal';
+        const freeMin = Math.round(getFreeSec() / 60);
+        const base = step.min;
+        const fk = freeMin > base ? 'free_good' : freeMin < base ? 'free_slow' : 'free_normal';
         playAudio(fk);
     } else if (step.ak) {
         playAudio(step.ak);
@@ -819,13 +819,6 @@ function completeStep(idx) {
     const elapsedSec = Math.round(elapsedMs / 1000);
     adv.elapsed[idx] = elapsedSec;
     adv.status[idx] = 'completed';
-
-    const freeStepIdx = adv.steps.findIndex(s => s.type === 'free');
-    if (step.type !== 'free' && idx < freeStepIdx) {
-        const planned = step.min * 60;
-        const diff = planned - elapsedSec;
-        adv.timeBankSec += diff;
-    }
 
     const nextIdx = idx + 1;
     if (nextIdx < adv.steps.length) {
@@ -868,7 +861,7 @@ function updateTimer() {
     if (idx < 0) { if(adv.timerHandle){clearInterval(adv.timerHandle);adv.timerHandle=null;} return; }
     const step = adv.steps[idx];
     let totalSec = step.min * 60;
-    if (step.type==='free') totalSec = Math.max(300, (step.min + Math.floor(adv.timeBankSec/60))*60);
+    if (step.type==='free') totalSec = getFreeSec();
     const elapsed = Math.round((Date.now() - adv.startTime[idx]) / 1000);
     const remain = totalSec - elapsed;
     const disp = document.getElementById('timerDisp');
@@ -945,19 +938,21 @@ function showVictory() {
     let totalStudy = 0;
     const freeI = adv.steps.findIndex(s => s.type==='free');
     adv.steps.forEach((s,i) => {
-        if (s.type === 'free' || i > freeI) return;
-        if (s.type === 'study') totalStudy += adv.elapsed[i];
+        if (s.type !== 'study') return;
+        totalStudy += adv.elapsed[i];
         const planned = s.min*60, diff = planned - adv.elapsed[i];
         summary += `${s.emoji} ${s.name}：${fmtSec(adv.elapsed[i])}`;
         if (diff>0) summary += ` <span style="color:#2ed573">（省${fmtSec(diff)}）</span>`;
         else if (diff<0) summary += ` <span style="color:#ff6b6b">（超${fmtSec(-diff)}）</span>`;
         summary += '<br>';
     });
+    if (freeI >= 0 && adv.elapsed[freeI]) {
+        summary += `🌈 自由王国：${fmtSec(adv.elapsed[freeI])}<br>`;
+    }
     summary += `<br>📝 总学习时间：${fmtSec(totalStudy)}`;
-    if (adv.lateDeducted) summary += `<br>⏰ 今天迟到了，自由王国被扣时间咯！下次要准时出发哦！`;
-    if (adv.timeBankSec > 0) summary += `<br>💚 总共省下：${fmtSec(adv.timeBankSec)}`;
-    else if (adv.timeBankSec < 0) summary += `<br>🔴 总共超时：${fmtSec(-adv.timeBankSec)}`;
-    else summary += '<br>⏰ 刚刚好按时完成！';
+    const now = new Date();
+    const endH = now.getHours(), endM = now.getMinutes();
+    summary += `<br>🏁 完成时间：${endH}:${String(endM).padStart(2,'0')}`;
 
     document.getElementById('vicSummary').innerHTML = summary;
     document.getElementById('vicOverlay').classList.add('show');
