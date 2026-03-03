@@ -917,21 +917,21 @@ function showEncouragement(step, doneIdx, nextIdx) {
         const elapsed = adv.elapsed[doneIdx];
         const planned = step.min * 60;
         const diff = planned - elapsed;
-        let audioKey = '', timeReport = '';
+        let fullVoice = '';
         if (diff > 10) {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，省下了 ${fmtSec(diff)}！💚`;
-            audioKey = 'early_' + (Math.floor(Math.random()*8) + 1);
-            timeReport = `${step.name}用了${fmtSec(elapsed)}，比计划快了${fmtSec(diff)}！效率超高！`;
+            const tmpl = VOICE_EARLY[Math.floor(Math.random()*VOICE_EARLY.length)].replace('{t}', fmtSec(diff));
+            fullVoice = tmpl + `。${step.name}用了${fmtSec(elapsed)}，比计划快了${fmtSec(diff)}！效率超高！`;
         } else if (diff >= -10) {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，正好按时完成！👍`;
-            audioKey = 'ontime_' + (Math.floor(Math.random()*6) + 1);
-            timeReport = `${step.name}用了${fmtSec(elapsed)}，刚刚好按时完成！`;
+            const tmpl = VOICE_ONTIME[Math.floor(Math.random()*VOICE_ONTIME.length)];
+            fullVoice = tmpl + `。${step.name}用了${fmtSec(elapsed)}，刚刚好按时完成！`;
         } else {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，超时了 ${fmtSec(-diff)} 🔴`;
-            audioKey = 'overtime_' + (Math.floor(Math.random()*4) + 1);
-            timeReport = `${step.name}用了${fmtSec(elapsed)}，超时了${fmtSec(-diff)}，下次加油！`;
+            const tmpl = VOICE_OVERTIME[Math.floor(Math.random()*VOICE_OVERTIME.length)].replace('{t}', fmtSec(-diff));
+            fullVoice = tmpl + `。${step.name}用了${fmtSec(elapsed)}，超时了${fmtSec(-diff)}，下次加油！`;
         }
-        playAudio(audioKey, undefined, () => speak(timeReport));
+        speak(fullVoice);
     } else {
         playAudio('enc_' + (Math.floor(Math.random()*10) + 1));
     }
