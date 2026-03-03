@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="小星星计划">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
+    <title>⭐ 小星星学习冒险计划 ⭐</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', system-ui, sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ffecd2 100%);
+            min-height: 100vh; color: #333;
+            position: relative;
+        }
+
+        /* === Side photos for desktop === */
+        .bg-photo {
+            position: fixed; top: 0; bottom: 0; z-index: -2;
+            pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .bg-photo img {
+            height: 92vh; width: auto; object-fit: contain;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            opacity: 0.88;
+        }
+        .bg-photo-left { left: 0; padding: 15px; }
+        .bg-photo-right { right: 0; padding: 15px; }
+        .bg-photo-right img { transform: scaleX(-1); }
+        @media (max-width:1350px) {
+            .bg-photo img { height: 80vh; }
+        }
+        @media (max-width:1150px) {
+            .bg-photo-right { display: none; }
+            .bg-photo img { height: 75vh; }
+        }
+        @media (max-width:1024px) {
+            .bg-photo { display: none; }
+        }
+
+        /* === Inline top photo for iPad portrait === */
+        .bg-photo-top { display: none; }
+
+        /* === iPad landscape: photo fixed on left, content shifts right === */
+        @media (min-width:1024px) and (max-width:1400px) and (orientation:landscape) {
+            .bg-photo-left {
+                display: flex; left: 0; padding: 10px; width: 27vw;
+            }
+            .bg-photo-left img {
+                height: 96vh; width: 100%; object-fit: contain;
+                border-radius: 14px;
+                box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+                opacity: 0.92;
+            }
+            .bg-photo-right { display: none; }
+            .bg-photo-top { display: none; }
+            .header, .main, .ipad-banner, .bg-deco {
+                margin-left: 27vw;
+            }
+            .nav {
+                position: sticky; top: 0; z-index: 100;
+                margin-left: 27vw;
+            }
+            .main { max-width: none; padding: 15px 20px; }
+        }
+
+        /* === iPad portrait: photo as top banner === */
+        @media (min-width:600px) and (max-width:1024px) and (orientation:portrait) {
+            .bg-photo { display: none; }
+            .bg-photo-top {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px 20px 10px;
+                background: linear-gradient(180deg, rgba(102,126,234,0.1) 0%, transparent 100%);
+            }
+            .bg-photo-top img {
+                height: auto;
+                width: 55%;
+                max-width: 350px;
+                border-radius: 20px;
+                box-shadow: 0 8px 30px rgba(102,126,234,0.3), 0 4px 12px rgba(0,0,0,0.12);
+                border: 4px solid rgba(255,255,255,0.9);
+            }
+            .bg-photo-top .photo-caption {
+                margin-left: 20px;
+                text-align: center;
+                color: #764ba2;
+                font-weight: bold;
+            }
+            .bg-photo-top .photo-caption .cap-trophy { font-size: 2.5em; display: block; margin-bottom: 5px; }
+            .bg-photo-top .photo-caption .cap-text { font-size: 1.15em; line-height: 1.6; }
+        }
+
+        /* === Phone: small centered photo === */
+        @media (max-width:600px) {
+            .bg-photo { display: none; }
+            .bg-photo-top {
+                display: flex;
+                justify-content: center;
+                padding: 15px 15px 8px;
+            }
+            .bg-photo-top img {
+                height: auto;
+                width: 45%;
+                max-width: 200px;
+                border-radius: 16px;
+                box-shadow: 0 6px 20px rgba(102,126,234,0.25);
+                border: 3px solid rgba(255,255,255,0.9);
+            }
+            .bg-photo-top .photo-caption {
+                margin-left: 15px;
+                text-align: center;
+                color: #764ba2;
+                font-weight: bold;
+                display: flex; flex-direction: column; justify-content: center;
+            }
+            .bg-photo-top .photo-caption .cap-trophy { font-size: 2em; display: block; margin-bottom: 3px; }
+            .bg-photo-top .photo-caption .cap-text { font-size: 0.95em; line-height: 1.5; }
+        }
+
+        /* === Phone landscape: hide top photo, show side photo === */
+        @media (max-width:900px) and (orientation:landscape) {
+            .bg-photo-top { display: none; }
+        }
+
+        .bg-deco {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: -1; overflow: hidden;
+        }
+        .bg-deco-trophy {
+            position: absolute; font-size: 4em; opacity: 0.12;
+            animation: floatDeco 8s ease-in-out infinite;
+        }
+        @keyframes floatDeco { 0%,100%{transform:translateY(0) rotate(-5deg)} 50%{transform:translateY(-20px) rotate(5deg)} }
+
+        .header {
+            text-align: center; padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; position: relative; overflow: hidden;
+        }
+        .header::before {
+            content: '✨🏆⭐🏆✨'; position: absolute; top: 5px; left: 50%;
+            transform: translateX(-50%); font-size: 16px; letter-spacing: 10px;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+        .header h1 { font-size: 2.2em; margin-top: 25px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); letter-spacing: 3px; }
+        .header p { font-size: 1.1em; margin-top: 5px; opacity: 0.9; }
+
+        @keyframes twinkle { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        @keyframes starPop { 0%{transform:scale(0) rotate(0);opacity:0} 50%{transform:scale(1.3) rotate(180deg);opacity:1} 100%{transform:scale(1) rotate(360deg);opacity:1} }
+        @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+        @keyframes slideIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes glow { 0%,100%{box-shadow:0 0 5px rgba(255,215,0,0.5)} 50%{box-shadow:0 0 20px rgba(255,215,0,0.8),0 0 40px rgba(255,215,0,0.4)} }
+        @keyframes breathe { 0%,100%{box-shadow:0 0 10px rgba(102,126,234,0.3)} 50%{box-shadow:0 0 25px rgba(102,126,234,0.6),0 0 50px rgba(118,75,162,0.3)} }
+        @keyframes victoryBounce { 0%{transform:scale(0) rotate(-10deg)} 40%{transform:scale(1.2) rotate(5deg)} 60%{transform:scale(0.9) rotate(-3deg)} 80%{transform:scale(1.05) rotate(1deg)} 100%{transform:scale(1) rotate(0)} }
+        @keyframes floatUp { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-80px) scale(1.5)} }
+        @keyframes confettiFall { to{top:110%;transform:rotate(720deg)} }
+        @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+
+        .nav {
+            display:flex; justify-content:center; gap:8px; padding:15px;
+            background:white; box-shadow:0 2px 10px rgba(0,0,0,0.1);
+            flex-wrap:wrap; position:sticky; top:0; z-index:100;
+        }
+        .nav-btn {
+            padding:10px 20px; border:2px solid #e0e0e0; border-radius:25px;
+            background:white; cursor:pointer; font-size:1em; font-weight:bold;
+            transition:all 0.3s; font-family:inherit;
+        }
+        .nav-btn:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+        .nav-btn.active { background:linear-gradient(135deg,#667eea,#764ba2); color:white; border-color:transparent; }
+        .main { max-width:900px; margin:0 auto; padding:20px; }
+        .tab-content { display:none; animation:slideIn 0.4s ease-out; }
+        .tab-content.active { display:block; }
+
+        /* ========== Adventure Mode ========== */
+        .adv-header {
+            text-align:center; background:white; border-radius:20px; padding:20px;
+            margin-bottom:15px; box-shadow:0 4px 15px rgba(0,0,0,0.08);
+        }
+        .adv-header h2 { font-size:1.5em; color:#764ba2; }
+        .adv-mode-toggle {
+            display:flex; justify-content:center; gap:10px; margin-top:12px;
+        }
+        .adv-mode-btn {
+            padding:8px 20px; border:2px solid #e0e0e0; border-radius:20px;
+            background:white; cursor:pointer; font-size:0.9em; font-weight:bold;
+            font-family:inherit; transition:all 0.2s;
+        }
+        .adv-mode-btn.active { background:linear-gradient(135deg,#667eea,#764ba2); color:white; border-color:transparent; }
+
+        .adv-progress {
+            background:white; border-radius:16px; padding:15px 20px;
+            margin-bottom:15px; box-shadow:0 4px 15px rgba(0,0,0,0.08);
+        }
+        .adv-progress-dots {
+            display:flex; align-items:center; justify-content:center; gap:4px; margin-bottom:8px;
+        }
+        .adv-dot {
+            width:32px; height:32px; border-radius:50%; display:flex; align-items:center;
+            justify-content:center; font-size:0.8em; font-weight:bold; transition:all 0.3s;
+            border:2px solid #e0e0e0; background:#f5f5f5; color:#bbb;
+        }
+        .adv-dot.done { background:#2ed573; border-color:#2ed573; color:white; }
+        .adv-dot.current { background:linear-gradient(135deg,#667eea,#764ba2); border-color:#764ba2; color:white; animation:breathe 2s infinite; transform:scale(1.15); }
+        .adv-dot-line { width:12px; height:3px; background:#e0e0e0; border-radius:2px; transition:background 0.3s; }
+        .adv-dot-line.done { background:#2ed573; }
+        .adv-progress-label { text-align:center; font-size:0.9em; color:#666; }
+
+        .adv-time-bank {
+            background:white; border-radius:16px; padding:12px 20px;
+            margin-bottom:15px; box-shadow:0 4px 15px rgba(0,0,0,0.08);
+            text-align:center; font-weight:bold; font-size:1.05em; display:none;
+        }
+        .adv-time-bank.show { display:block; }
+        .adv-time-bank.positive { color:#27ae60; background:linear-gradient(135deg,#e8f8f0,#d5f5e3); }
+        .adv-time-bank.negative { color:#e74c3c; background:linear-gradient(135deg,#fdedec,#fadbd8); }
+        .adv-time-bank.zero { color:#666; }
+
+        .adv-step {
+            background:white; border-radius:16px; padding:18px 20px; margin-bottom:12px;
+            box-shadow:0 4px 15px rgba(0,0,0,0.08); border-left:5px solid #e0e0e0;
+            transition:all 0.4s; position:relative; overflow:hidden;
+        }
+        .adv-step.locked { opacity:0.45; transform:scale(0.97); }
+        .adv-step.ready { border-left-color:#667eea; animation:breathe 2s infinite; }
+        .adv-step.timing { border-left-color:#667eea; box-shadow:0 6px 25px rgba(102,126,234,0.25); }
+        .adv-step.completed { border-left-color:#2ed573; background:#f0fdf4; }
+        .adv-step.completed .adv-step-overlay { display:none; }
+
+        .adv-step-head {
+            display:flex; align-items:center; gap:10px; margin-bottom:8px;
+        }
+        .adv-step-num {
+            width:30px; height:30px; border-radius:50%; display:flex; align-items:center;
+            justify-content:center; font-weight:bold; font-size:0.85em; flex-shrink:0;
+            background:#f0f0f0; color:#999; transition:all 0.3s;
+        }
+        .adv-step.ready .adv-step-num, .adv-step.timing .adv-step-num { background:linear-gradient(135deg,#667eea,#764ba2); color:white; }
+        .adv-step.completed .adv-step-num { background:#2ed573; color:white; }
+        .adv-step-emoji { font-size:1.4em; }
+        .adv-step-name { font-size:1.25em; font-weight:bold; flex:1; }
+        .adv-step-duration { font-size:0.8em; background:#f0f0f0; padding:3px 10px; border-radius:10px; color:#666; white-space:nowrap; }
+        .adv-step.completed .adv-step-duration { background:#d5f5e3; color:#27ae60; }
+
+        .adv-step-body { margin-top:6px; color:#666; font-size:0.95em; line-height:1.6; }
+        .adv-step-check { margin-top:8px; padding:6px 12px; background:#e8f8f0; border-radius:10px; font-size:0.85em; color:#27ae60; }
+        .adv-step-tip { margin-top:8px; padding:6px 12px; background:#fff9e6; border-radius:10px; font-size:0.85em; color:#e67e22; }
+
+        .adv-step-timer {
+            text-align:center; margin:15px 0 10px; font-size:3.5em; font-weight:bold;
+            font-variant-numeric:tabular-nums; transition:color 0.3s;
+        }
+        .adv-step-timer.normal { color:#333; }
+        .adv-step-timer.warning { color:#e67e22; }
+        .adv-step-timer.danger { color:#e74c3c; animation:pulse 0.5s infinite; }
+        .adv-step-timer.overtime { color:#e74c3c; }
+
+        .adv-step-actions { display:flex; gap:10px; justify-content:center; margin-top:12px; }
+        .adv-btn {
+            padding:12px 30px; border:none; border-radius:25px; font-size:1.1em;
+            font-weight:bold; cursor:pointer; font-family:inherit; transition:all 0.2s;
+            min-height:48px;
+        }
+        .adv-btn:active { transform:scale(0.95); }
+        .adv-btn-start { background:linear-gradient(135deg,#2ed573,#26c064); color:white; }
+        .adv-btn-start:hover { box-shadow:0 4px 15px rgba(46,213,115,0.4); }
+        .adv-btn-done { background:linear-gradient(135deg,#667eea,#764ba2); color:white; }
+        .adv-btn-done:hover { box-shadow:0 4px 15px rgba(118,75,162,0.4); }
+        .adv-btn-pause { background:#ff9f43; color:white; }
+        .adv-btn-reset { background:white; color:#999; border:2px solid #ddd; font-size:0.85em; padding:8px 18px; }
+        .adv-btn-reset:hover { border-color:#764ba2; color:#764ba2; }
+
+        .adv-step-result {
+            display:flex; align-items:center; gap:15px; justify-content:center;
+            margin-top:8px; font-size:0.95em; flex-wrap:wrap;
+        }
+        .adv-result-time { color:#666; }
+        .adv-result-saved { color:#27ae60; font-weight:bold; }
+        .adv-result-over { color:#e74c3c; font-weight:bold; }
+
+        .adv-overtime-label {
+            display:inline-block; background:#e74c3c; color:white; padding:2px 8px;
+            border-radius:8px; font-size:0.7em; margin-left:5px; vertical-align:middle;
+        }
+
+        /* Encourage Overlay */
+        .enc-overlay {
+            display:none; position:fixed; top:0;left:0;right:0;bottom:0;
+            background:rgba(0,0,0,0.5); z-index:2000;
+            justify-content:center; align-items:center;
+        }
+        .enc-overlay.show { display:flex; }
+        .enc-popup {
+            background:white; border-radius:30px; padding:35px 30px; text-align:center;
+            max-width:380px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3);
+            animation:victoryBounce 0.6s ease-out;
+        }
+        .enc-emoji { font-size:4em; animation:bounce 1s infinite; }
+        .enc-text { font-size:1.4em; font-weight:bold; margin:12px 0 8px; color:#333; }
+        .enc-detail { font-size:1em; color:#666; margin-bottom:5px; line-height:1.6; }
+        .enc-btn {
+            margin-top:15px; padding:12px 35px; border:none; border-radius:25px;
+            font-size:1.1em; font-weight:bold; cursor:pointer; font-family:inherit;
+            background:linear-gradient(135deg,#667eea,#764ba2); color:white;
+            transition:all 0.2s; min-height:48px;
+        }
+        .enc-btn:hover { transform:translateY(-2px); box-shadow:0 4px 15px rgba(118,75,162,0.4); }
+
+        /* Victory Overlay */
+        .vic-overlay {
+            display:none; position:fixed; top:0;left:0;right:0;bottom:0;
+            background:linear-gradient(135deg,rgba(102,126,234,0.95),rgba(118,75,162,0.95));
+            z-index:3000; justify-content:center; align-items:center; flex-direction:column;
+        }
+        .vic-overlay.show { display:flex; }
+        .vic-trophy { font-size:6em; animation:victoryBounce 0.8s ease-out; }
+        .vic-title {
+            font-size:2em; color:white; margin:15px 0; font-weight:bold;
+            text-shadow:2px 2px 4px rgba(0,0,0,0.2); text-align:center;
+        }
+        .vic-summary {
+            background:rgba(255,255,255,0.15); border-radius:20px; padding:20px 25px;
+            color:white; margin:10px 20px; max-width:400px; width:90%; text-align:center;
+            font-size:1.05em; line-height:1.8;
+        }
+        .vic-btn {
+            margin-top:20px; padding:14px 40px; border:none; border-radius:30px;
+            font-size:1.2em; font-weight:bold; cursor:pointer; font-family:inherit;
+            background:linear-gradient(135deg,#ffd93d,#f093fb); color:#333;
+            transition:all 0.2s; min-height:52px;
+        }
+        .vic-btn:hover { transform:scale(1.05); }
+
+        /* Float up emoji effect */
+        .float-emoji {
+            position:fixed; pointer-events:none; z-index:9999;
+            font-size:2em; animation:floatUp 1.5s ease-out forwards;
+        }
+
+        /* Static schedule for print/reference */
+        .static-schedule { display:none; }
+        .static-schedule.show { display:block; }
+        .static-schedule .timeline { position:relative; padding-left:40px; }
+        .static-schedule .timeline::before {
+            content:''; position:absolute; left:18px; top:0; bottom:0; width:4px;
+            background:linear-gradient(to bottom,#667eea,#764ba2,#f093fb,#f5576c,#ffd93d,#6c5ce7);
+            border-radius:2px;
+        }
+        .s-card {
+            position:relative; background:white; border-radius:16px; padding:16px 18px;
+            margin-bottom:12px; box-shadow:0 3px 12px rgba(0,0,0,0.06);
+            border-left:5px solid; transition:all 0.3s;
+        }
+        .s-card::before {
+            content:''; position:absolute; left:-31px; top:20px; width:14px; height:14px;
+            border-radius:50%; border:3px solid white; box-shadow:0 2px 5px rgba(0,0,0,0.2);
+        }
+        .s-card .s-time { font-size:0.82em; font-weight:bold; color:#999; margin-bottom:3px; }
+        .s-card .s-title { font-size:1.2em; font-weight:bold; display:flex; align-items:center; gap:8px; }
+        .s-card .s-dur { font-size:0.75em; background:#f0f0f0; padding:2px 8px; border-radius:8px; color:#666; }
+        .s-card .s-desc { margin-top:6px; color:#666; font-size:0.9em; line-height:1.5; }
+        .s-card .s-check { margin-top:6px; padding:5px 10px; background:#e8f8f0; border-radius:8px; font-size:0.82em; color:#27ae60; }
+
+        /* ========== Tabs 2-4 (same as before) ========== */
+        .week-nav { display:flex; justify-content:center; align-items:center; gap:15px; margin-bottom:20px; }
+        .week-nav button { padding:8px 18px; border:2px solid #764ba2; border-radius:20px; background:white; color:#764ba2; font-weight:bold; cursor:pointer; font-size:0.95em; transition:all 0.2s; font-family:inherit; }
+        .week-nav button:hover { background:#764ba2; color:white; }
+        .week-label { font-size:1.2em; font-weight:bold; color:#764ba2; min-width:200px; text-align:center; }
+        .tracking-table { width:100%; border-collapse:separate; border-spacing:4px; background:white; border-radius:20px; padding:10px; box-shadow:0 4px 15px rgba(0,0,0,0.08); }
+        .tracking-table th { padding:10px 4px; text-align:center; font-size:0.95em; color:#764ba2; }
+        .tracking-table td { padding:8px 4px; text-align:center; border-radius:12px; font-size:1em; }
+        .tracking-table .row-label { text-align:left; font-weight:bold; font-size:0.9em; white-space:nowrap; padding-left:8px; }
+        .star-cell { cursor:pointer; font-size:1.5em; transition:all 0.2s; user-select:none; border-radius:12px; min-width:36px; }
+        .star-cell:hover { background:#fff3cd; transform:scale(1.1); }
+        .star-cell.earned { animation:starPop 0.4s ease-out; }
+        .weekly-summary { text-align:center; background:white; border-radius:20px; padding:20px; margin-top:20px; box-shadow:0 4px 15px rgba(0,0,0,0.08); }
+        .star-count { font-size:2.5em; font-weight:bold; color:#ffd93d; text-shadow:1px 1px 3px rgba(0,0,0,0.1); }
+        .star-count span { color:#764ba2; font-size:0.6em; }
+        .encourage-msg { font-size:1.2em; margin-top:10px; padding:10px 20px; border-radius:15px; font-weight:bold; }
+        .reward-card { background:white; border-radius:20px; padding:25px; margin-bottom:20px; box-shadow:0 4px 15px rgba(0,0,0,0.08); text-align:center; transition:all 0.3s; }
+        .reward-card:hover { transform:translateY(-3px); }
+        .reward-card h3 { font-size:1.4em; margin-bottom:10px; }
+        .reward-card .stars-needed { font-size:1.1em; color:#666; margin-bottom:15px; }
+        .reward-progress { height:20px; background:#f0f0f0; border-radius:10px; overflow:hidden; margin:10px 0; }
+        .reward-progress-bar { height:100%; border-radius:10px; transition:width 0.5s ease; background:linear-gradient(90deg,#ffd93d,#f093fb); }
+        .reward-card.bronze { border:3px solid #cd7f32; } .reward-card.bronze h3 { color:#cd7f32; }
+        .reward-card.silver { border:3px solid #c0c0c0; } .reward-card.silver h3 { color:#888; }
+        .reward-card.gold { border:3px solid #ffd700; animation:glow 2s infinite; } .reward-card.gold h3 { color:#d4a017; }
+        .reward-status { font-size:1.2em; margin-top:8px; font-weight:bold; }
+        .rules-box { background:white; border-radius:20px; padding:25px; margin-top:20px; box-shadow:0 4px 15px rgba(0,0,0,0.08); }
+        .rules-box h3 { font-size:1.3em; color:#764ba2; margin-bottom:15px; text-align:center; }
+        .rule-item { display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px dashed #eee; font-size:1.05em; line-height:1.6; }
+        .rule-item:last-child { border-bottom:none; }
+        .rule-num { background:linear-gradient(135deg,#667eea,#764ba2); color:white; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.85em; flex-shrink:0; }
+        .parent-section { background:white; border-radius:20px; padding:25px; margin-bottom:20px; box-shadow:0 4px 15px rgba(0,0,0,0.08); }
+        .parent-section h3 { font-size:1.2em; color:#764ba2; margin-bottom:15px; padding-bottom:10px; border-bottom:2px solid #f0f0f0; }
+        .parent-section p,.parent-section li { line-height:1.8; color:#555; font-size:0.95em; }
+        .parent-section ul { padding-left:20px; } .parent-section li { margin-bottom:8px; }
+        .highlight { background:#fff3cd; padding:2px 6px; border-radius:4px; }
+        .division-table { width:100%; border-collapse:collapse; margin-top:10px; }
+        .division-table th,.division-table td { padding:10px 15px; border:1px solid #eee; text-align:center; }
+        .division-table th { background:#f8f9fa; color:#764ba2; }
+        .schedule-intro { text-align:center; background:white; border-radius:20px; padding:20px; margin-bottom:20px; box-shadow:0 4px 15px rgba(0,0,0,0.08); }
+        .schedule-intro h2 { font-size:1.5em; color:#764ba2; }
+        .schedule-intro p { color:#666; margin-top:8px; font-size:1.05em; }
+
+        .data-actions { display:flex; gap:10px; justify-content:center; margin-top:20px; flex-wrap:wrap; }
+        .data-btn { padding:8px 18px; border:2px solid #ddd; border-radius:20px; background:white; cursor:pointer; font-size:0.85em; transition:all 0.2s; font-family:inherit; color:#666; }
+        .data-btn:hover { border-color:#764ba2; color:#764ba2; }
+
+        .print-btn { position:fixed; bottom:20px; right:20px; padding:12px 24px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border:none; border-radius:25px; font-size:1em; cursor:pointer; box-shadow:0 4px 15px rgba(118,75,162,0.4); z-index:99; font-family:inherit; font-weight:bold; transition:all 0.2s; }
+        .print-btn:hover { transform:translateY(-2px); }
+
+        .ipad-banner { display:none; background:linear-gradient(135deg,#667eea,#764ba2); color:white; text-align:center; padding:12px 20px; font-size:0.9em; position:relative; }
+        .ipad-banner .close-banner { position:absolute; right:15px; top:50%; transform:translateY(-50%); background:none; border:none; color:white; font-size:1.3em; cursor:pointer; padding:5px 10px; }
+        .ipad-banner.show { display:block; }
+
+        .confetti-container { position:fixed; top:0;left:0; width:100%;height:100%; pointer-events:none; z-index:9999; overflow:hidden; }
+        .confetti { position:absolute; top:-10px; font-size:1.5em; animation:confettiFall linear forwards; }
+
+        @media print {
+            body { background:white!important; }
+            .header { background:none!important; color:#333!important; border-bottom:3px solid #764ba2; }
+            .header::before { display:none; }
+            .bg-photo,.bg-deco,.bg-photo-top { display:none!important; }
+            .nav,.no-print { display:none!important; }
+            .tab-content { display:block!important; page-break-after:always; }
+            .tab-content:last-child { page-break-after:avoid; }
+            .static-schedule { display:block!important; }
+            #adventureArea { display:none!important; }
+            .s-card { break-inside:avoid; box-shadow:none; border:1px solid #ddd; }
+            .tracking-table { box-shadow:none; border:1px solid #ddd; }
+        }
+        .print-only { display:none; }
+
+        @media (max-width:600px) {
+            .header h1 { font-size:1.5em; }
+            .nav-btn { padding:8px 14px; font-size:0.85em; }
+            .main { padding:10px; }
+            .adv-step-name { font-size:1.1em; }
+            .adv-step-timer { font-size:2.8em; }
+            .vic-title { font-size:1.5em; }
+        }
+        /* iPad portrait */
+        @media (min-width:601px) and (max-width:1024px) and (orientation:portrait) {
+            .main { max-width:750px; }
+            .star-cell { font-size:1.8em; padding:10px; min-width:44px; }
+            .nav-btn { padding:12px 22px; font-size:1.05em; }
+        }
+        /* iPad landscape */
+        @media (min-width:1024px) and (max-width:1400px) and (orientation:landscape) {
+            .star-cell { font-size:1.8em; padding:10px; min-width:44px; }
+            .nav-btn { padding:12px 22px; font-size:1.05em; }
+            .adv-header h2 { font-size:1.3em; }
+        }
+        @media (pointer:coarse) {
+            .star-cell { min-height:50px; display:flex; align-items:center; justify-content:center; }
+            .nav-btn,.adv-btn,.adv-mode-btn,.enc-btn,.vic-btn { min-height:44px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-photo bg-photo-left" aria-hidden="true">
+    <img src="bg.jpg" alt="">
+</div>
+<div class="bg-photo bg-photo-right" aria-hidden="true">
+    <img src="bg.jpg" alt="">
+</div>
+
+<div class="bg-deco" aria-hidden="true">
+    <span class="bg-deco-trophy" style="top:15%;left:5%;animation-delay:0s">🏆</span>
+    <span class="bg-deco-trophy" style="top:40%;right:3%;animation-delay:2s">⭐</span>
+    <span class="bg-deco-trophy" style="top:65%;left:8%;animation-delay:4s">🌟</span>
+    <span class="bg-deco-trophy" style="top:85%;right:6%;animation-delay:1s">🏆</span>
+    <span class="bg-deco-trophy" style="top:30%;left:50%;animation-delay:3s;font-size:3em">🥇</span>
+    <span class="bg-deco-trophy" style="top:55%;right:50%;animation-delay:5s;font-size:3em">✨</span>
+</div>
+
+<div class="header">
+    <h1>🏆 小星星学习冒险计划 🏆</h1>
+    <p>每天收集星星，成为最棒的自己！</p>
+</div>
+
+<div class="bg-photo-top no-print" aria-hidden="true">
+    <img src="bg.jpg" alt="">
+    <div class="photo-caption">
+        <span class="cap-trophy">🏆</span>
+        <span class="cap-text">叶柠萱小冠军<br>每天进步一点点！</span>
+    </div>
+</div>
+
+<div class="ipad-banner no-print" id="ipadBanner">
+    💡 点击Safari底部的 <strong>分享按钮 ⬆️</strong> → <strong>"添加到主屏幕"</strong>，像App一样使用！
+    <button class="close-banner" onclick="closeBanner()">✕</button>
+</div>
+
+<div class="nav no-print">
+    <button class="nav-btn active" onclick="showTab('schedule')">🎮 每日冒险</button>
+    <button class="nav-btn" onclick="showTab('tracking')">📊 星星记录</button>
+    <button class="nav-btn" onclick="showTab('rewards')">🏆 奖励商店</button>
+    <button class="nav-btn" onclick="showTab('parents')">👨‍👩‍👧 给爸爸妈妈</button>
+</div>
+
+<div class="main">
+    <!-- ============ TAB 1: ADVENTURE ============ -->
+    <div id="tab-schedule" class="tab-content active">
+        <div class="adv-header">
+            <h2>🗺️ 今天的冒险地图</h2>
+            <div class="adv-mode-toggle no-print">
+                <button class="adv-mode-btn active" id="btnWeekday" onclick="switchDayType('weekday')">📚 工作日</button>
+                <button class="adv-mode-btn" id="btnWeekend" onclick="switchDayType('weekend')">🎈 周末</button>
+                <button class="adv-mode-btn" id="btnStatic" onclick="toggleStaticView()">📋 查看计划</button>
+                <button class="adv-mode-btn" onclick="toggleVoicePanel()">🔊 语音</button>
+            </div>
+        </div>
+
+        <!-- Voice Settings Panel -->
+        <div id="voicePanel" class="no-print" style="display:none; background:white; border-radius:16px; padding:18px 20px; margin-bottom:15px; box-shadow:0 4px 15px rgba(0,0,0,0.08);">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                <strong style="color:#764ba2; font-size:1.1em;">🔊 语音设置</strong>
+                <button onclick="toggleVoicePanel()" style="background:none;border:none;font-size:1.2em;cursor:pointer;">✕</button>
+            </div>
+            <div style="margin-bottom:10px; font-size:0.85em; color:#e67e22; padding:8px 12px; background:#fff9e6; border-radius:10px;">
+                💡 推荐使用 <strong>Microsoft Edge 浏览器</strong>打开此页面，语音质量最好，有自然男声可选！
+            </div>
+            <div style="margin-bottom:10px;">
+                <label style="font-size:0.9em; color:#666;">选择语音：</label>
+                <select id="voiceSelect" onchange="onVoiceChange()" style="width:100%; padding:10px; border-radius:10px; border:2px solid #e0e0e0; font-size:1em; font-family:inherit; margin-top:5px;"></select>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button onclick="testVoice()" style="padding:8px 18px; border:none; border-radius:20px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; font-weight:bold; cursor:pointer; font-family:inherit; font-size:0.9em;">▶️ 试听</button>
+                <button onclick="testVoiceLong()" style="padding:8px 18px; border:none; border-radius:20px; background:linear-gradient(135deg,#2ed573,#26c064); color:white; font-weight:bold; cursor:pointer; font-family:inherit; font-size:0.9em;">▶️ 试听鼓励语</button>
+            </div>
+            <div id="voiceInfo" style="margin-top:10px; font-size:0.82em; color:#999;"></div>
+        </div>
+        <div id="adventureArea"></div>
+        <div id="staticArea" class="static-schedule"></div>
+    </div>
+
+    <!-- ============ TAB 2: WEEKLY TRACKING ============ -->
+    <div id="tab-tracking" class="tab-content">
+        <div class="week-nav no-print">
+            <button onclick="changeWeek(-1)">⬅️ 上一周</button>
+            <div class="week-label" id="weekLabel"></div>
+            <button onclick="changeWeek(1)">下一周 ➡️</button>
+        </div>
+        <table class="tracking-table"><thead><tr>
+            <th style="text-align:left;padding-left:12px;">任务项目</th>
+            <th>周一</th><th>周二</th><th>周三</th><th>周四</th><th>周五</th>
+            <th style="color:#2ed573">周六</th><th style="color:#2ed573">周日</th>
+        </tr></thead><tbody id="trackingBody"></tbody>
+        <tfoot><tr><td class="row-label">每日合计</td>
+            <td id="dayTotal0" style="font-weight:bold;color:#764ba2">0</td>
+            <td id="dayTotal1" style="font-weight:bold;color:#764ba2">0</td>
+            <td id="dayTotal2" style="font-weight:bold;color:#764ba2">0</td>
+            <td id="dayTotal3" style="font-weight:bold;color:#764ba2">0</td>
+            <td id="dayTotal4" style="font-weight:bold;color:#764ba2">0</td>
+            <td id="dayTotal5" style="font-weight:bold;color:#2ed573">0</td>
+            <td id="dayTotal6" style="font-weight:bold;color:#2ed573">0</td>
+        </tr></tfoot></table>
+        <div class="weekly-summary">
+            <div>本周一共收集了</div>
+            <div class="star-count" id="weeklyStarCount">0 <span>/ 35 ⭐</span></div>
+            <div class="encourage-msg" id="encourageMsg"></div>
+        </div>
+        <div class="data-actions no-print">
+            <button class="data-btn" onclick="exportData()">📥 导出记录</button>
+            <button class="data-btn" onclick="importData()">📤 导入记录</button>
+        </div>
+    </div>
+
+    <!-- ============ TAB 3: REWARDS ============ -->
+    <div id="tab-rewards" class="tab-content">
+        <div class="schedule-intro" style="margin-bottom:20px"><h2>🏆 星星奖励商店</h2><p>收集足够的星星，就能兑换奖励哦！</p></div>
+        <div class="reward-card bronze"><h3>🥉 铜牌勇士</h3><div class="stars-needed">每周收集 <strong>21颗</strong> 星星</div><div class="reward-progress"><div class="reward-progress-bar" id="bronzeBar" style="width:0%"></div></div><div class="reward-status" id="bronzeStatus"></div><div style="margin-top:10px;color:#666">🎁 奖励：可以<strong>多玩30分钟</strong>！</div></div>
+        <div class="reward-card silver"><h3>🥈 银牌英雄</h3><div class="stars-needed">每周收集 <strong>28颗</strong> 星星</div><div class="reward-progress"><div class="reward-progress-bar" id="silverBar" style="width:0%"></div></div><div class="reward-status" id="silverStatus"></div><div style="margin-top:10px;color:#666">🎁 奖励：选一个<strong>特别活动</strong>（去公园、看电影、吃大餐……）！</div></div>
+        <div class="reward-card gold"><h3>🥇 金牌冠军</h3><div class="stars-needed">每周收集 <strong>35颗</strong> 星星（满星！）</div><div class="reward-progress"><div class="reward-progress-bar" id="goldBar" style="width:0%"></div></div><div class="reward-status" id="goldStatus"></div><div style="margin-top:10px;color:#666">🎁 奖励：实现一个<strong>小心愿</strong>！（和爸爸妈妈商量）</div></div>
+        <div class="rules-box"><h3>📜 星星收集规则</h3>
+            <div class="rule-item"><div class="rule-num">1</div><div>每天有 <strong>5种</strong> 星星可以收集，周一到周日<strong>每天</strong>都有机会！一周最多 <strong>35颗</strong>！</div></div>
+            <div class="rule-item"><div class="rule-num">2</div><div><strong>⏰ 按时开始</strong>：6点35分之前坐好开始写作业，就能获得1颗星！</div></div>
+            <div class="rule-item"><div class="rule-num">3</div><div><strong>🔢 数学完成</strong>：认真做完数学作业（周末为学习任务），就能获得1颗星！</div></div>
+            <div class="rule-item"><div class="rule-num">4</div><div><strong>📖 语文完成</strong>：认真做完语文作业（周末为练字/阅读），就能获得1颗星！</div></div>
+            <div class="rule-item"><div class="rule-num">5</div><div><strong>✏️ 练字完成</strong>：认真练完字，就能获得1颗星！</div></div>
+            <div class="rule-item"><div class="rule-num">6</div><div><strong>🌟 专心勋章</strong>：整个学习过程中没有开小差、不拖拉，就能获得1颗额外的星！</div></div>
+            <div class="rule-item"><div class="rule-num">7</div><div>星星由<strong>自己诚实记录</strong>，爸爸妈妈会帮忙确认。诚实的孩子最棒！</div></div>
+        </div>
+    </div>
+
+    <!-- ============ TAB 4: PARENT GUIDE ============ -->
+    <div id="tab-parents" class="tab-content">
+        <div class="parent-section"><h3>📋 使用说明</h3><ul>
+            <li>本计划为<strong>互动网页版</strong>，直接在浏览器中打开即可使用，数据自动保存在本地浏览器中。</li>
+            <li>每日冒险地图为<strong>互动闯关模式</strong>，孩子每完成一个步骤点击"完成"，会有语音鼓励和动画奖励，自动进入下一关。</li>
+            <li><strong>时间动态调整</strong>：如果学习任务提前完成，省下的时间会自动加到"自由王国"；超时则扣减，让孩子直观感受效率的价值。</li>
+            <li>点击右下角"🖨️ 打印"按钮可以打印静态计划表和空白周记录表。</li>
+            <li>在"星星记录"页面点击表格中的格子即可记录/取消星星，数据会自动保存。</li>
+        </ul></div>
+        <div class="parent-section"><h3>👨‍👩‍👧 分工安排</h3><table class="division-table">
+            <tr><th>科目</th><th>孩子做什么</th><th>家长做什么</th></tr>
+            <tr><td><strong>🔢 数学</strong></td><td>独立完成作业</td><td><span class="highlight">爸爸</span>：完成后检查、讲解错题</td></tr>
+            <tr><td><strong>📖 语文</strong></td><td>独立完成作业</td><td><span class="highlight">妈妈</span>：完成后检查、帮助复习</td></tr>
+            <tr><td><strong>✏️ 练字</strong></td><td>独立练字 + 自查</td><td>爸爸或妈妈：简单检查即可</td></tr>
+            <tr><td><strong>📚 阅读</strong></td><td>自主阅读或亲子共读</td><td>有空时陪读，没空时让孩子自读</td></tr>
+        </table></div>
+        <div class="parent-section"><h3>💡 执行建议</h3><ul>
+            <li><strong>前两周需要引导</strong>：刚开始执行时，家长帮孩子点"出发"按钮。两周后让孩子自己操作。</li>
+            <li><strong>6点半是硬性起点</strong>：一旦到了18:35，无论是否"准备好"，都要开始。</li>
+            <li><strong>语音提示代替催促</strong>：系统会自动语音播报，减少家长口头催促带来的亲子冲突。</li>
+            <li><strong>时间银行是核心激励</strong>：提前完成=更多玩耍时间，这个直观的反馈比任何说教都有效。</li>
+            <li><strong>休息时间必须给</strong>：不要因为写得慢就取消休息。休息是下一轮专注的保障。</li>
+            <li><strong>灵活调整</strong>：作业多时可调整科目顺序，但总框架不变（学习→休息→学习→休息→学习→自由时间）。</li>
+        </ul></div>
+        <div class="parent-section"><h3>⚠️ 常见问题处理</h3><ul>
+            <li><strong>孩子不愿开始</strong>：直接帮她按"出发"，语音播报会吸引注意力。</li>
+            <li><strong>做作业时开小差</strong>：让倒计时的存在提醒她。超时了自由时间会减少，自然后果即可。</li>
+            <li><strong>20分钟做不完</strong>：先保持2周，如果持续做不完，可适当延长5分钟。</li>
+            <li><strong>周末安排更轻松</strong>：周末只有2个学习块，自由时间增加到70分钟。</li>
+        </ul></div>
+    </div>
+</div>
+
+<!-- Encouragement Overlay -->
+<div class="enc-overlay" id="encOverlay">
+    <div class="enc-popup">
+        <div class="enc-emoji" id="encEmoji">🎉</div>
+        <div class="enc-text" id="encText">太棒了！</div>
+        <div class="enc-detail" id="encDetail"></div>
+        <button class="enc-btn" id="encBtn" onclick="advanceToNext()">进入下一关！ ➡️</button>
+    </div>
+</div>
+
+<!-- Victory Overlay -->
+<div class="vic-overlay" id="vicOverlay">
+    <div class="vic-trophy" id="vicTrophy">🏆</div>
+    <div class="vic-title">🎉 今日冒险大成功！🎉</div>
+    <div class="vic-summary" id="vicSummary"></div>
+    <button class="vic-btn" onclick="closeVictory()">🌟 我是最棒的！</button>
+</div>
+
+<button class="print-btn no-print" onclick="window.print()">🖨️ 打印</button>
+
+<script>
+// ==================== STEP DEFINITIONS ====================
+const WEEKDAY_STEPS = [
+    { id:'prepare', emoji:'🎒', name:'准备起航', min:5, type:'fixed', color:'#a29bfe',
+      desc:'吃完晚饭啦！洗洗小手，把文具准备好！', tip:'把铅笔、橡皮、作业本都拿出来！',
+      voice:'叶柠萱！冒险开始啦！先把文具准备好，我们马上出发！', check:null },
+    { id:'math', emoji:'🔢', name:'数学王国', min:20, type:'study', color:'#6c63ff',
+      desc:'专心做数学作业，遇到不会的先跳过，做完再回来想。',
+      voice:'叶柠萱！数学王国，出发！你一定行的，认真做题，加油加油！', check:'做完后找<b>爸爸</b>检查！' },
+    { id:'break1', emoji:'🎮', name:'快乐休息', min:10, type:'fixed', color:'#ff9f43',
+      desc:'可以玩玩具、画画、跳舞……想干嘛就干嘛！', tip:'听到提示就准备下一关哦！',
+      voice:'叶柠萱，辛苦啦！休息十分钟，想玩什么就玩什么吧！', check:null },
+    { id:'chinese', emoji:'📖', name:'语文乐园', min:20, type:'study', color:'#ff6b9d',
+      desc:'专心做语文作业，认真读题目，一笔一划写漂亮！',
+      voice:'叶柠萱！语文乐园出发啦！认真读题，好好写字，你可以的！', check:'做完后找<b>妈妈</b>检查！' },
+    { id:'break2', emoji:'🎨', name:'快乐休息', min:10, type:'fixed', color:'#ff9f43',
+      desc:'喝点水，上个厕所，活动活动！',
+      voice:'叶柠萱，又到休息时间啦！喝点水，活动活动，马上就快全部完成了！', check:null },
+    { id:'writing', emoji:'✏️', name:'练字小屋', min:20, type:'study', color:'#2ed573',
+      desc:'一笔一划，认真练字。比昨天写得更漂亮！', tip:'坐端正、握好笔、慢慢写！',
+      voice:'叶柠萱！最后一个学习任务啦！写出最漂亮的字，加油，马上就能自由玩耍了！', check:'自己先检查，再给爸爸妈妈看！' },
+    { id:'free', emoji:'🌈', name:'自由王国', min:40, type:'free', color:'#ffd93d',
+      desc:'🎉 作业全部完成！看动画、玩游戏、画画……随你选！',
+      voice:'', check:null },
+    { id:'story', emoji:'📚', name:'故事时光', min:15, type:'fixed', color:'#a55eea',
+      desc:'选一本喜欢的书，安静地读一读～',
+      voice:'叶柠萱，故事时间到！选一本你最喜欢的书，安安静静地读一读吧！', check:null },
+    { id:'sleep', emoji:'🌙', name:'晚安准备', min:10, type:'fixed', color:'#3d3d8e',
+      desc:'收拾书包 → 准备明天的衣服 → 去洗漱！', tip:'21:30 准时上床，做个好梦！',
+      voice:'叶柠萱，今天真棒！收拾好书包，准备洗漱睡觉，明天又是元气满满的一天！', check:null },
+];
+const WEEKEND_STEPS = [
+    { id:'prepare', emoji:'🎒', name:'准备起航', min:5, type:'fixed', color:'#a29bfe',
+      desc:'吃完晚饭，准备好学习用品！',
+      voice:'叶柠萱！周末冒险也要准时出发！很快就能做完，然后就有超长自由时间啦！', check:null },
+    { id:'study', emoji:'📝', name:'周末学习', min:20, type:'study', color:'#6c63ff',
+      desc:'做周末作业，或复习这周学的内容。',
+      voice:'叶柠萱！周末学习开始！就二十分钟，认真做，很快就完成啦！', check:'做完后找爸爸或妈妈检查！' },
+    { id:'break1', emoji:'🎮', name:'快乐休息', min:10, type:'fixed', color:'#ff9f43',
+      desc:'休息一下，喝点水，活动活动～',
+      voice:'叶柠萱，辛苦啦！休息十分钟，放松一下吧！', check:null },
+    { id:'reading', emoji:'✏️📖', name:'练字或阅读', min:20, type:'study', color:'#2ed573',
+      desc:'选一样：练字 ✏️ 或者读好书 📖',
+      voice:'叶柠萱！练字或者阅读，选一个你喜欢的！做完就有超级自由时间啦！', check:'自己先检查，再给爸爸妈妈看看！' },
+    { id:'free', emoji:'🌈👑', name:'超级自由王国', min:70, type:'free', color:'#ffd93d',
+      desc:'🎉 周末自由时间超～级～长！随便你怎么玩！',
+      voice:'', check:null },
+    { id:'story', emoji:'📚', name:'故事时光', min:15, type:'fixed', color:'#a55eea',
+      desc:'安静下来，读本书或听故事～',
+      voice:'叶柠萱，故事时间到！选一本你最喜欢的书吧！', check:null },
+    { id:'sleep', emoji:'🌙', name:'晚安准备', min:10, type:'fixed', color:'#3d3d8e',
+      desc:'周末也要早睡哦！早睡早起身体棒！',
+      voice:'叶柠萱，今天表现真棒！准备洗漱睡觉，明天又是快乐的一天！', check:null },
+];
+
+const ENCOURAGEMENTS = [
+    { emoji:'🌟', text:'太棒了！你真是闪亮的小星星！' },
+    { emoji:'💪', text:'好厉害！又闯过一关！' },
+    { emoji:'🚀', text:'冲冲冲！速度好快呀！' },
+    { emoji:'🦸‍♀️', text:'小超人！太简单了对不对？' },
+    { emoji:'🌈', text:'像彩虹一样闪耀！' },
+    { emoji:'🎯', text:'完美完成！你最棒！' },
+    { emoji:'👸', text:'小公主真厉害！做得好极了！' },
+    { emoji:'🎉', text:'了不起！又前进了一大步！' },
+    { emoji:'🐱', text:'比小猫还厉害！喵～' },
+    { emoji:'🦄', text:'你就是最闪亮的独角兽！' },
+    { emoji:'🏅', text:'金牌选手！这关轻轻松松！' },
+    { emoji:'🎪', text:'表演太精彩了！再来一关！' },
+    { emoji:'🧠', text:'小脑袋瓜真聪明！' },
+    { emoji:'🌻', text:'像向日葵一样充满阳光！' },
+    { emoji:'🐰', text:'比小兔子还机灵！' },
+    { emoji:'🎵', text:'学习也能像唱歌一样快乐！' },
+    { emoji:'🌙', text:'你是夜空中最亮的星！' },
+    { emoji:'🐝', text:'像小蜜蜂一样勤劳又棒！' },
+    { emoji:'🎈', text:'每一步都让你飞得更高！' },
+    { emoji:'🍭', text:'甜甜的胜利！继续冲！' },
+    { emoji:'🦋', text:'像蝴蝶一样越来越美！' },
+    { emoji:'🌺', text:'绽放吧！你是最美的花！' },
+    { emoji:'🐬', text:'聪明的小海豚！好厉害！' },
+    { emoji:'⚡', text:'闪电速度！太快了吧！' },
+    { emoji:'🍀', text:'幸运星！这关大获全胜！' },
+    { emoji:'🎀', text:'漂漂亮亮地完成了！' },
+    { emoji:'🐣', text:'小鸡破壳！又成长了一点！' },
+    { emoji:'🏰', text:'一步步建造你的知识城堡！' },
+    { emoji:'🧩', text:'又拼上了一块拼图！' },
+    { emoji:'🎸', text:'摇滚小明星！太酷了！' },
+];
+
+// Voice lines for study completion (early/on-time/overtime)
+const VOICE_EARLY = [
+    '叶柠萱！哇！太厉害了！提前{t}完成！你的自由时间又变多啦！',
+    '叶柠萱！好快呀！省下了{t}！这些时间都变成自由时间了！',
+    '叶柠萱！不可思议！{t}都省下来了！你太棒了！',
+    '叶柠萱！像闪电一样快！提前{t}完成！继续保持！',
+    '叶柠萱！效率小达人！{t}就这样被你省下来了！给你点赞！',
+    '叶柠萱！又快又好！提前{t}！自由王国在向你招手！',
+    '叶柠萱！哇塞！快了整整{t}！你今天状态超好！',
+    '叶柠萱！学霸就是你！提前{t}完成，轻轻松松！',
+];
+const VOICE_ONTIME = [
+    '叶柠萱，好样的！刚好按时完成！你做得非常棒！',
+    '叶柠萱，稳稳的！按时完成，做得真好！',
+    '叶柠萱，完美卡点！时间管理小达人！',
+    '叶柠萱，漂亮！准时完成！你越来越厉害了！',
+    '叶柠萱，正好按时，不早不晚，刚刚好！真棒！',
+    '叶柠萱，按时完成！你的时间感越来越好了！',
+];
+const VOICE_OVERTIME = [
+    '叶柠萱，完成啦！虽然多用了{t}，但你坚持做完了，没有放弃，真的很棒！下次加快一点哦！',
+    '叶柠萱，做完了！超时了{t}，不过没关系，完成就是胜利！下次争取更快！',
+    '叶柠萱，虽然多花了{t}，但你认真做完了，这才是最重要的！下次加油！',
+    '叶柠萱，完成了！用了多一点时间，但你没有放弃！下次试试更专心，一定能更快！',
+];
+
+// ==================== ADVENTURE STATE ====================
+let adv = { steps:[], status:[], startTime:[], elapsed:[], currentIdx:-1, timeBankSec:0, timerHandle:null, finished:false, dayType:'weekday', warned30:{}, warned2m:{} };
+
+function getTodayKey() {
+    const d = new Date();
+    return `adv_${d.getFullYear()}_${String(d.getMonth()+1).padStart(2,'0')}_${String(d.getDate()).padStart(2,'0')}_${adv.dayType}`;
+}
+function saveAdventure() {
+    const data = { status:adv.status, elapsed:adv.elapsed, timeBankSec:adv.timeBankSec, finished:adv.finished, currentIdx:adv.currentIdx };
+    localStorage.setItem(getTodayKey(), JSON.stringify(data));
+}
+function loadAdventure() {
+    const raw = localStorage.getItem(getTodayKey());
+    if (!raw) return false;
+    try {
+        const d = JSON.parse(raw);
+        adv.status = d.status; adv.elapsed = d.elapsed;
+        adv.timeBankSec = d.timeBankSec||0; adv.finished = d.finished;
+        adv.currentIdx = d.currentIdx;
+        return true;
+    } catch(e) { return false; }
+}
+
+function initAdventure() {
+    adv.steps = adv.dayType==='weekend' ? WEEKEND_STEPS : WEEKDAY_STEPS;
+    if (adv.timerHandle) { clearInterval(adv.timerHandle); adv.timerHandle=null; }
+    adv.warned30 = {};
+    adv.warned2m = {};
+    if (!loadAdventure()) {
+        adv.status = adv.steps.map((_,i) => i===0?'ready':'locked');
+        adv.startTime = adv.steps.map(()=>null);
+        adv.elapsed = adv.steps.map(()=>0);
+        adv.currentIdx = 0; adv.timeBankSec = 0; adv.finished = false;
+    } else {
+        adv.startTime = adv.steps.map(()=>null);
+        if (!adv.finished) {
+            const timingIdx = adv.status.indexOf('timing');
+            if (timingIdx >= 0) { adv.status[timingIdx] = 'ready'; }
+        }
+    }
+    renderAdventure();
+}
+
+function switchDayType(type) {
+    if (adv.timerHandle) { clearInterval(adv.timerHandle); adv.timerHandle=null; }
+    adv.dayType = type;
+    document.getElementById('btnWeekday').classList.toggle('active', type==='weekday');
+    document.getElementById('btnWeekend').classList.toggle('active', type==='weekend');
+    document.getElementById('btnStatic').classList.remove('active');
+    document.getElementById('staticArea').classList.remove('show');
+    document.getElementById('adventureArea').style.display = '';
+    initAdventure();
+}
+
+function resetAdventure() {
+    if (!confirm('确定要重新开始今天的冒险吗？')) return;
+    localStorage.removeItem(getTodayKey());
+    if (adv.timerHandle) { clearInterval(adv.timerHandle); adv.timerHandle=null; }
+    initAdventure();
+}
+
+// ==================== RENDER ADVENTURE ====================
+function renderAdventure() {
+    const area = document.getElementById('adventureArea');
+    let html = '';
+
+    // Progress dots
+    html += '<div class="adv-progress"><div class="adv-progress-dots">';
+    adv.steps.forEach((s,i) => {
+        if (i>0) html += `<div class="adv-dot-line ${adv.status[i-1]==='completed'?'done':''}"></div>`;
+        const cls = adv.status[i]==='completed'?'done': (i===adv.currentIdx && !adv.finished)?'current':'';
+        html += `<div class="adv-dot ${cls}">${adv.status[i]==='completed'?'✓':(i+1)}</div>`;
+    });
+    html += '</div>';
+    const doneCount = adv.status.filter(s=>s==='completed').length;
+    html += `<div class="adv-progress-label">第 ${Math.min(doneCount+1, adv.steps.length)} / ${adv.steps.length} 关</div></div>`;
+
+    // Time bank
+    const freeIdx = adv.steps.findIndex(s=>s.type==='free');
+    if (adv.timeBankSec !== 0 && freeIdx >= 0) {
+        const absSec = Math.abs(adv.timeBankSec);
+        const mm = Math.floor(absSec/60), ss = absSec%60;
+        const timeStr = ss>0 ? `${mm}分${ss}秒` : `${mm}分钟`;
+        const freeMins = adv.steps[freeIdx].min;
+        const adjusted = freeMins + Math.floor(adv.timeBankSec/60);
+        const cls = adv.timeBankSec>0?'positive':'negative';
+        html += `<div class="adv-time-bank show ${cls}">`;
+        if (adv.timeBankSec > 0) {
+            html += `🏦 时间银行：+${timeStr} → 🌈 自由王国变成 <strong>${adjusted}分钟</strong>！`;
+        } else {
+            html += `🏦 时间银行：-${timeStr} → 🌈 自由王国变成 <strong>${adjusted}分钟</strong>`;
+        }
+        html += '</div>';
+    }
+
+    // Step cards
+    adv.steps.forEach((step, i) => {
+        const st = adv.status[i];
+        html += `<div class="adv-step ${st}" id="step-${i}" style="border-left-color:${st==='locked'?'#e0e0e0':step.color}">`;
+        html += '<div class="adv-step-head">';
+        html += `<div class="adv-step-num">${st==='completed'?'✓':(i+1)}</div>`;
+        html += `<span class="adv-step-emoji">${step.emoji}</span>`;
+        html += `<span class="adv-step-name">${step.name}</span>`;
+
+        if (st==='completed' && step.type==='study') {
+            const el = adv.elapsed[i], planned = step.min*60, diff = planned - el;
+            const em = Math.floor(el/60), es = el%60;
+            html += `<span class="adv-step-duration" style="background:#d5f5e3;color:#27ae60">⏱ ${em}:${String(es).padStart(2,'0')}</span>`;
+            if (diff > 0) html += `<span class="adv-step-duration" style="background:#d5f5e3;color:#27ae60">💚+${fmtSec(diff)}</span>`;
+            else if (diff < 0) html += `<span class="adv-step-duration" style="background:#fadbd8;color:#e74c3c">🔴-${fmtSec(-diff)}</span>`;
+        } else if (st==='completed') {
+            html += `<span class="adv-step-duration" style="background:#d5f5e3;color:#27ae60">✅ 完成</span>`;
+        } else {
+            let dur = step.min;
+            if (step.type==='free' && adv.timeBankSec!==0) dur = Math.max(5, dur + Math.floor(adv.timeBankSec/60));
+            html += `<span class="adv-step-duration">${dur}分钟${step.type==='free'&&adv.timeBankSec>0?'！':''}</span>`;
+        }
+        html += '</div>';
+
+        if (st !== 'locked' && st !== 'completed') {
+            html += `<div class="adv-step-body">${step.desc}</div>`;
+            if (step.check) html += `<div class="adv-step-check">✅ ${step.check}</div>`;
+            if (step.tip && st==='ready') html += `<div class="adv-step-tip">🌟 ${step.tip}</div>`;
+        }
+
+        if (st === 'timing') {
+            html += `<div class="adv-step-timer normal" id="timerDisp">--:--</div>`;
+            html += '<div class="adv-step-actions">';
+            html += `<button class="adv-btn adv-btn-done" onclick="completeStep(${i})">✅ 完成！</button>`;
+            html += '</div>';
+        } else if (st === 'ready') {
+            html += '<div class="adv-step-actions">';
+            html += `<button class="adv-btn adv-btn-start" onclick="startStep(${i})">🚀 出发！</button>`;
+            html += '</div>';
+        }
+        html += '</div>';
+    });
+
+    // Reset button
+    if (!adv.finished && doneCount > 0) {
+        html += '<div style="text-align:center;margin-top:15px"><button class="adv-btn adv-btn-reset" onclick="resetAdventure()">🔄 重新开始今天的冒险</button></div>';
+    }
+    if (adv.finished) {
+        html += '<div style="text-align:center;margin-top:15px"><div style="font-size:1.5em;margin-bottom:10px">🎉 今天的冒险已全部完成！好好休息吧！</div>';
+        html += '<button class="adv-btn adv-btn-reset" onclick="resetAdventure()">🔄 重新开始</button></div>';
+    }
+
+    area.innerHTML = html;
+
+    if (adv.status.indexOf('timing') >= 0) startTimerLoop();
+    if (!adv.finished && adv.currentIdx >= 0 && adv.currentIdx < adv.steps.length) {
+        setTimeout(() => { const el = document.getElementById('step-'+adv.currentIdx); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); }, 300);
+    }
+}
+
+function fmtSec(s) {
+    const m = Math.floor(s/60), sec = s%60;
+    if (m>0 && sec>0) return `${m}分${sec}秒`;
+    if (m>0) return `${m}分钟`;
+    return `${sec}秒`;
+}
+
+// ==================== STEP ACTIONS ====================
+function startStep(idx) {
+    adv.status[idx] = 'timing';
+    adv.startTime[idx] = Date.now();
+    adv.elapsed[idx] = 0;
+    adv.warned30[idx] = false;
+    adv.warned2m[idx] = false;
+    saveAdventure();
+    renderAdventure();
+
+    const step = adv.steps[idx];
+    if (step.type === 'free') {
+        const adj = Math.max(5, step.min + Math.floor(adv.timeBankSec/60));
+        const msg = adv.timeBankSec > 0
+            ? `叶柠萱！耶！太棒了！自由王国开始！因为你今天做得又快又好，可以玩整整${adj}分钟！尽情玩吧，你值得的！`
+            : adv.timeBankSec < 0
+            ? `叶柠萱，自由王国开始啦！今天有${adj}分钟自由时间哦！下次写快一点，自由时间就会更长啦！`
+            : `叶柠萱！自由王国开始！${adj}分钟自由时间，想做什么就做什么，开心地玩吧！`;
+        speak(msg);
+    } else {
+        speak(step.voice);
+    }
+    playStartChime();
+}
+
+function completeStep(idx) {
+    if (adv.timerHandle) { clearInterval(adv.timerHandle); adv.timerHandle = null; }
+
+    const step = adv.steps[idx];
+    const now = Date.now();
+    const elapsedMs = adv.startTime[idx] ? (now - adv.startTime[idx]) : 0;
+    const elapsedSec = Math.round(elapsedMs / 1000);
+    adv.elapsed[idx] = elapsedSec;
+    adv.status[idx] = 'completed';
+
+    if (step.type === 'study') {
+        const planned = step.min * 60;
+        const diff = planned - elapsedSec;
+        adv.timeBankSec += diff;
+    }
+
+    const nextIdx = idx + 1;
+    if (nextIdx < adv.steps.length) {
+        adv.status[nextIdx] = 'ready';
+        adv.currentIdx = nextIdx;
+    }
+
+    saveAdventure();
+    renderAdventure();
+    playEndChime();
+    showFloatEmojis();
+
+    if (nextIdx >= adv.steps.length) {
+        adv.finished = true;
+        adv.currentIdx = -1;
+        saveAdventure();
+        setTimeout(() => showVictory(), 800);
+    } else {
+        showEncouragement(step, idx, nextIdx);
+    }
+}
+
+// ==================== TIMER LOOP ====================
+function startTimerLoop() {
+    if (adv.timerHandle) return;
+    adv.timerHandle = setInterval(updateTimer, 500);
+    updateTimer();
+}
+const STUDY_30S_WARNINGS = [
+    '叶柠萱，还有30秒！最后冲刺，加油加油！',
+    '叶柠萱，30秒倒计时开始！快快完成，你可以的！',
+    '叶柠萱，最后30秒啦！集中精力，马上就好了！',
+    '叶柠萱，30秒！坚持住！胜利就在眼前！',
+    '叶柠萱，还差一点点！30秒内搞定它！',
+];
+const BREAK_2M_WARNING = '好学的叶柠萱小朋友，休息时间马上结束咯，请快回来探索知识';
+
+function updateTimer() {
+    const idx = adv.status.indexOf('timing');
+    if (idx < 0) { if(adv.timerHandle){clearInterval(adv.timerHandle);adv.timerHandle=null;} return; }
+    const step = adv.steps[idx];
+    let totalSec = step.min * 60;
+    if (step.type==='free') totalSec = Math.max(300, (step.min + Math.floor(adv.timeBankSec/60))*60);
+    const elapsed = Math.round((Date.now() - adv.startTime[idx]) / 1000);
+    const remain = totalSec - elapsed;
+    const disp = document.getElementById('timerDisp');
+    if (!disp) return;
+
+    if (remain >= 0) {
+        const m = Math.floor(remain/60), s = remain%60;
+        disp.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        disp.className = 'adv-step-timer ' + (remain>120?'normal':remain>30?'warning':'danger');
+    } else {
+        const over = -remain;
+        const m = Math.floor(over/60), s = over%60;
+        disp.textContent = `+${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        disp.className = 'adv-step-timer overtime';
+    }
+
+    // Study steps: voice warning at 30 seconds remaining
+    if (step.type === 'study' && remain <= 30 && remain > 28 && !adv.warned30[idx]) {
+        adv.warned30[idx] = true;
+        const msg = STUDY_30S_WARNINGS[Math.floor(Math.random()*STUDY_30S_WARNINGS.length)];
+        speak(msg);
+    }
+
+    // Break (fixed type with "break" id) and free steps: voice warning at 2 minutes remaining, repeat 3 times louder
+    const isBreakOrFree = (step.type === 'free') || (step.type === 'fixed' && /^break/.test(step.id));
+    if (isBreakOrFree && remain <= 120 && remain > 118 && !adv.warned2m[idx]) {
+        adv.warned2m[idx] = true;
+        speakRepeat(BREAK_2M_WARNING, 3, 1);
+    }
+}
+
+// ==================== ENCOURAGEMENT ====================
+function showEncouragement(step, doneIdx, nextIdx) {
+    const enc = ENCOURAGEMENTS[Math.floor(Math.random()*ENCOURAGEMENTS.length)];
+    document.getElementById('encEmoji').textContent = enc.emoji;
+    document.getElementById('encText').textContent = enc.text;
+
+    let detail = '';
+    if (step.type === 'study') {
+        const elapsed = adv.elapsed[doneIdx];
+        const planned = step.min * 60;
+        const diff = planned - elapsed;
+        if (diff > 10) {
+            detail = `⏱️ 用时 ${fmtSec(elapsed)}，省下了 ${fmtSec(diff)}！💚`;
+            const tpl = VOICE_EARLY[Math.floor(Math.random()*VOICE_EARLY.length)];
+            speak(tpl.replace('{t}', fmtSec(diff)));
+        } else if (diff >= -10) {
+            detail = `⏱️ 用时 ${fmtSec(elapsed)}，正好按时完成！👍`;
+            speak(VOICE_ONTIME[Math.floor(Math.random()*VOICE_ONTIME.length)]);
+        } else {
+            detail = `⏱️ 用时 ${fmtSec(elapsed)}，超时了 ${fmtSec(-diff)} 🔴`;
+            const tpl = VOICE_OVERTIME[Math.floor(Math.random()*VOICE_OVERTIME.length)];
+            speak(tpl.replace('{t}', fmtSec(-diff)));
+        }
+    } else {
+        speak('叶柠萱，' + enc.text + '，继续加油！');
+    }
+
+    const nextStep = adv.steps[nextIdx];
+    detail += `<br>下一关：${nextStep.emoji} <strong>${nextStep.name}</strong>`;
+    document.getElementById('encDetail').innerHTML = detail;
+    document.getElementById('encBtn').textContent = `进入 ${nextStep.name}！ ➡️`;
+    document.getElementById('encOverlay').classList.add('show');
+}
+
+function advanceToNext() {
+    document.getElementById('encOverlay').classList.remove('show');
+    renderAdventure();
+}
+
+// ==================== VICTORY ====================
+function showVictory() {
+    showMassConfetti();
+
+    let summary = '';
+    let totalStudy = 0;
+    adv.steps.forEach((s,i) => {
+        if (s.type==='study') {
+            totalStudy += adv.elapsed[i];
+            const planned = s.min*60, diff = planned - adv.elapsed[i];
+            summary += `${s.emoji} ${s.name}：${fmtSec(adv.elapsed[i])}`;
+            if (diff>0) summary += ` <span style="color:#2ed573">（省${fmtSec(diff)}）</span>`;
+            else if (diff<0) summary += ` <span style="color:#ff6b6b">（超${fmtSec(-diff)}）</span>`;
+            summary += '<br>';
+        }
+    });
+    summary += `<br>📝 总学习时间：${fmtSec(totalStudy)}`;
+    if (adv.timeBankSec > 0) summary += `<br>💚 总共省下：${fmtSec(adv.timeBankSec)}`;
+    else if (adv.timeBankSec < 0) summary += `<br>🔴 总共超时：${fmtSec(-adv.timeBankSec)}`;
+    else summary += '<br>⏰ 刚刚好按时完成！';
+
+    document.getElementById('vicSummary').innerHTML = summary;
+    document.getElementById('vicOverlay').classList.add('show');
+    speak('叶柠萱！太棒了！恭喜你！今天的冒险全部完成！你真的太厉害了，是最棒的小星星！好好休息，明天继续加油哦！');
+}
+function closeVictory() {
+    document.getElementById('vicOverlay').classList.remove('show');
+    renderAdventure();
+}
+
+// ==================== VOICE (Speech Synthesis) ====================
+let selectedVoice = null;
+let allZhVoices = [];
+
+function loadVoices() {
+    if (!('speechSynthesis' in window)) return;
+    const voices = speechSynthesis.getVoices();
+    if (!voices.length) return;
+
+    allZhVoices = voices.filter(v => /^zh/i.test(v.lang));
+    populateVoiceSelect();
+
+    // Check if user previously saved a voice preference
+    const savedName = localStorage.getItem('starPlan_voiceName');
+    if (savedName) {
+        const match = allZhVoices.find(v => v.name === savedName);
+        if (match) { selectedVoice = match; syncSelectToVoice(); return; }
+    }
+    // Auto-select best voice
+    selectedVoice = autoPick();
+    syncSelectToVoice();
+}
+
+function autoPick() {
+    if (!allZhVoices.length) return null;
+    // Tier 1: Microsoft neural/online male voices (Edge browser)
+    const t1Names = ['Yunxi','Yunyang','Yunjian','云希','云扬','云健'];
+    for (const n of t1Names) {
+        const found = allZhVoices.find(v => v.name.includes(n));
+        if (found) return found;
+    }
+    // Tier 2: Any "Online"/"Natural" Chinese voice (Edge has these)
+    const online = allZhVoices.find(v => /online|natural/i.test(v.name) && !/female|xiaoxiao|晓晓/i.test(v.name))
+                || allZhVoices.find(v => /online|natural/i.test(v.name));
+    if (online) return online;
+    // Tier 3: Male voices
+    const male = allZhVoices.find(v => /male|kangkang|康康|yunfan|云帆|zhiwei|志伟/i.test(v.name));
+    if (male) return male;
+    // Tier 4: zh-CN, non-female
+    const cn = allZhVoices.filter(v => v.lang==='zh-CN');
+    const nonF = cn.filter(v => !/female|xiaoxiao|晓晓|xiaoyi|晓伊/i.test(v.name));
+    return nonF[0] || cn[0] || allZhVoices[0];
+}
+
+function populateVoiceSelect() {
+    const sel = document.getElementById('voiceSelect');
+    if (!sel) return;
+    sel.innerHTML = '';
+    if (!allZhVoices.length) {
+        sel.innerHTML = '<option>（未找到中文语音）</option>';
+        return;
+    }
+    allZhVoices.forEach((v, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        let label = v.name;
+        if (/online|natural/i.test(v.name)) label += ' ⭐自然';
+        if (/male|yunxi|yunyang|kangkang|云希|云扬|康康/i.test(v.name)) label += ' 👨男声';
+        if (/female|xiaoxiao|晓晓/i.test(v.name)) label += ' 👩女声';
+        opt.textContent = label;
+        sel.appendChild(opt);
+    });
+}
+
+function syncSelectToVoice() {
+    const sel = document.getElementById('voiceSelect');
+    if (!sel || !selectedVoice) return;
+    const idx = allZhVoices.indexOf(selectedVoice);
+    if (idx >= 0) sel.value = idx;
+    updateVoiceInfo();
+}
+
+function onVoiceChange() {
+    const sel = document.getElementById('voiceSelect');
+    const idx = parseInt(sel.value);
+    if (allZhVoices[idx]) {
+        selectedVoice = allZhVoices[idx];
+        localStorage.setItem('starPlan_voiceName', selectedVoice.name);
+        updateVoiceInfo();
+    }
+}
+
+function updateVoiceInfo() {
+    const el = document.getElementById('voiceInfo');
+    if (!el || !selectedVoice) return;
+    let info = `当前：${selectedVoice.name}`;
+    if (/online|natural/i.test(selectedVoice.name)) info += ' — ⭐ 高质量自然语音';
+    else info += ' — 标准合成语音';
+    info += ` | 共找到 ${allZhVoices.length} 个中文语音`;
+    el.textContent = info;
+}
+
+function toggleVoicePanel() {
+    const p = document.getElementById('voicePanel');
+    p.style.display = p.style.display==='none' ? 'block' : 'none';
+}
+
+function testVoice() {
+    speak('叶柠萱，你好！我是你的冒险小助手！准备好了吗？');
+}
+function testVoiceLong() {
+    speak('叶柠萱！哇！太厉害了！提前五分钟完成！你的自由时间又变多啦！继续加油！');
+}
+
+function speak(text, vol) {
+    try {
+        if (!('speechSynthesis' in window)) return;
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'zh-CN';
+        u.volume = (vol !== undefined) ? vol : 1;
+
+        if (selectedVoice) {
+            u.voice = selectedVoice;
+            if (/online|natural/i.test(selectedVoice.name)) {
+                u.rate = 1.05; u.pitch = 1.0;
+            } else {
+                u.rate = 0.92; u.pitch = 0.85;
+            }
+        } else {
+            u.rate = 0.92; u.pitch = 0.85;
+        }
+        speechSynthesis.speak(u);
+    } catch(e) {}
+}
+
+function speakRepeat(text, times, vol) {
+    try {
+        if (!('speechSynthesis' in window)) return;
+        speechSynthesis.cancel();
+        for (let i = 0; i < times; i++) {
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'zh-CN';
+            u.volume = (vol !== undefined) ? vol : 1;
+            if (selectedVoice) {
+                u.voice = selectedVoice;
+                if (/online|natural/i.test(selectedVoice.name)) {
+                    u.rate = 1.0; u.pitch = 1.05;
+                } else {
+                    u.rate = 0.88; u.pitch = 0.9;
+                }
+            } else {
+                u.rate = 0.88; u.pitch = 0.9;
+            }
+            speechSynthesis.speak(u);
+        }
+    } catch(e) {}
+}
+
+// Voice loading - browsers load voices asynchronously
+if ('speechSynthesis' in window) {
+    loadVoices();
+    speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+// ==================== AUDIO CHIMES ====================
+function playStartChime() {
+    try {
+        const ctx = new (window.AudioContext||window.webkitAudioContext)();
+        [[523.25,0],[659.25,0.12],[783.99,0.24]].forEach(([freq,t]) => {
+            const o=ctx.createOscillator(), g=ctx.createGain();
+            o.connect(g); g.connect(ctx.destination);
+            o.type='sine'; o.frequency.value=freq;
+            g.gain.setValueAtTime(0.25,ctx.currentTime+t);
+            g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+t+0.3);
+            o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+0.3);
+        });
+    } catch(e){}
+}
+function playEndChime() {
+    try {
+        const ctx = new (window.AudioContext||window.webkitAudioContext)();
+        [[783.99,0],[1046.50,0.15],[1318.51,0.3],[1567.98,0.45]].forEach(([freq,t]) => {
+            const o=ctx.createOscillator(), g=ctx.createGain();
+            o.connect(g); g.connect(ctx.destination);
+            o.type='sine'; o.frequency.value=freq;
+            g.gain.setValueAtTime(0.3,ctx.currentTime+t);
+            g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+t+0.4);
+            o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+0.4);
+        });
+    } catch(e){}
+}
+
+// ==================== EFFECTS ====================
+function showFloatEmojis() {
+    const emojis = ['⭐','🌟','✨','💫','🎉','🎊','💪','🏆'];
+    for (let i=0; i<8; i++) {
+        const el = document.createElement('div');
+        el.className = 'float-emoji';
+        el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+        el.style.left = (20+Math.random()*60)+'%';
+        el.style.top = (30+Math.random()*40)+'%';
+        el.style.animationDelay = (Math.random()*0.5)+'s';
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(), 2000);
+    }
+}
+function showConfetti() {
+    const c = document.createElement('div'); c.className='confetti-container';
+    document.body.appendChild(c);
+    const emojis=['⭐','🌟','✨','💫','🎉','🎊'];
+    for(let i=0;i<15;i++){
+        const e=document.createElement('div'); e.className='confetti';
+        e.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+        e.style.left=Math.random()*100+'%';
+        e.style.animationDuration=(1.5+Math.random()*2)+'s';
+        e.style.animationDelay=Math.random()*0.5+'s';
+        c.appendChild(e);
+    }
+    setTimeout(()=>c.remove(),4000);
+}
+function showMassConfetti() {
+    for(let wave=0;wave<3;wave++) setTimeout(()=>{
+        const c=document.createElement('div');c.className='confetti-container';
+        document.body.appendChild(c);
+        const emojis=['⭐','🌟','✨','💫','🎉','🎊','🏆','👑','🌈','🦄'];
+        for(let i=0;i<30;i++){
+            const e=document.createElement('div');e.className='confetti';
+            e.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+            e.style.left=Math.random()*100+'%';
+            e.style.fontSize=(1.5+Math.random()*1.5)+'em';
+            e.style.animationDuration=(2+Math.random()*3)+'s';
+            e.style.animationDelay=Math.random()*1+'s';
+            c.appendChild(e);
+        }
+        setTimeout(()=>c.remove(),6000);
+    }, wave*800);
+}
+
+// ==================== STATIC SCHEDULE VIEW ====================
+function toggleStaticView() {
+    const sa = document.getElementById('staticArea');
+    const aa = document.getElementById('adventureArea');
+    const btn = document.getElementById('btnStatic');
+    if (sa.classList.contains('show')) {
+        sa.classList.remove('show'); aa.style.display='';
+        btn.classList.remove('active');
+    } else {
+        renderStaticSchedule();
+        sa.classList.add('show'); aa.style.display='none';
+        btn.classList.add('active');
+    }
+}
+function renderStaticSchedule() {
+    const steps = adv.dayType==='weekend' ? WEEKEND_STEPS : WEEKDAY_STEPS;
+    let time = 18*60+30;
+    let html = '<div class="timeline">';
+    steps.forEach(s => {
+        const h1=Math.floor(time/60), m1=time%60;
+        const end=time+s.min;
+        const h2=Math.floor(end/60), m2=end%60;
+        const t1=`${h1}:${String(m1).padStart(2,'0')}`;
+        const t2=`${h2}:${String(m2).padStart(2,'0')}`;
+        html+=`<div class="s-card" style="border-color:${s.color}"><div style="position:absolute;left:-31px;top:20px;width:14px;height:14px;border-radius:50%;background:${s.color};border:3px solid white;box-shadow:0 2px 5px rgba(0,0,0,0.2)"></div>`;
+        html+=`<div class="s-time">⏰ ${t1} - ${t2}</div>`;
+        html+=`<div class="s-title">${s.emoji} ${s.name} <span class="s-dur">${s.min}分钟</span></div>`;
+        html+=`<div class="s-desc">${s.desc}</div>`;
+        if(s.check) html+=`<div class="s-check">✅ ${s.check}</div>`;
+        html+='</div>';
+        time=end;
+    });
+    html+='</div>';
+    document.getElementById('staticArea').innerHTML=html;
+}
+
+// ==================== TAB NAVIGATION ====================
+function showTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('tab-'+tabName).classList.add('active');
+    const btns=document.querySelectorAll('.nav > .nav-btn');
+    const map={schedule:0,tracking:1,rewards:2,parents:3};
+    if(btns[map[tabName]]) btns[map[tabName]].classList.add('active');
+    if(tabName==='tracking') renderTracking();
+    if(tabName==='rewards') updateRewards();
+}
+
+// ==================== WEEKLY TRACKING ====================
+let currentWeekOffset = 0;
+const trackItems = [
+    {id:'ontime',label:'⏰ 按时开始'},{id:'math',label:'🔢 数学完成'},
+    {id:'chinese',label:'📖 语文完成'},{id:'handwriting',label:'✏️ 练字完成'},
+    {id:'focus',label:'🌟 专心勋章'},
+];
+function getWeekKey(off) {
+    const n=new Date(); n.setDate(n.getDate()+off*7);
+    const d=n.getDay(), mon=new Date(n); mon.setDate(n.getDate()-(d===0?6:d-1));
+    return `week_${mon.getFullYear()}_${String(mon.getMonth()+1).padStart(2,'0')}_${String(mon.getDate()).padStart(2,'0')}`;
+}
+function getWeekLabel(off) {
+    const n=new Date(); n.setDate(n.getDate()+off*7);
+    const d=n.getDay(), mon=new Date(n); mon.setDate(n.getDate()-(d===0?6:d-1));
+    const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+    const f=d=>`${d.getMonth()+1}月${d.getDate()}日`;
+    let l=`${f(mon)} - ${f(sun)}`; if(off===0) l+=' (本周)'; return l;
+}
+function changeWeek(dir) { currentWeekOffset+=dir; renderTracking(); }
+function getWeekData(wk) {
+    const r=localStorage.getItem('starPlan_'+wk);
+    const d=r?JSON.parse(r):{};
+    for(let i=0;i<7;i++){if(!d[i]){d[i]={};trackItems.forEach(t=>{d[i][t.id]=false;});}} return d;
+}
+function saveWeekData(wk,d) { localStorage.setItem('starPlan_'+wk,JSON.stringify(d)); }
+function toggleStar(wk,day,id) {
+    const d=getWeekData(wk); d[day][id]=!d[day][id]; saveWeekData(wk,d);
+    renderTracking(); if(d[day][id]) showConfetti();
+}
+function countWeekStars(wk) {
+    const d=getWeekData(wk); let t=0;
+    for(let i=0;i<7;i++) trackItems.forEach(item=>{if(d[i][item.id])t++;}); return t;
+}
+function renderTracking() {
+    const wk=getWeekKey(currentWeekOffset), d=getWeekData(wk);
+    document.getElementById('weekLabel').textContent=getWeekLabel(currentWeekOffset);
+    const tbody=document.getElementById('trackingBody'); tbody.innerHTML='';
+    trackItems.forEach(item=>{
+        const tr=document.createElement('tr');
+        const td0=document.createElement('td'); td0.className='row-label'; td0.textContent=item.label; tr.appendChild(td0);
+        for(let i=0;i<7;i++){
+            const td=document.createElement('td'); td.className='star-cell'+(d[i][item.id]?' earned':'');
+            td.textContent=d[i][item.id]?'⭐':'☆';
+            if(i>=5) td.style.background=d[i][item.id]?'':'#f0fff0';
+            td.onclick=()=>toggleStar(wk,i,item.id); tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+    });
+    for(let i=0;i<7;i++){
+        let c=0; trackItems.forEach(item=>{if(d[i][item.id])c++;});
+        document.getElementById('dayTotal'+i).textContent=c+'/5';
+    }
+    const total=countWeekStars(wk);
+    document.getElementById('weeklyStarCount').innerHTML=total+' <span>/ 35 ⭐</span>';
+    const msg=document.getElementById('encourageMsg');
+    if(total===0){msg.textContent='🚀 新的一周！加油收集星星吧！';msg.style.background='#f0f0f0';msg.style.color='#999';}
+    else if(total<14){msg.textContent='💪 很棒的开始！继续加油！';msg.style.background='#e8f8f0';msg.style.color='#27ae60';}
+    else if(total<21){msg.textContent='🌟 越来越厉害！铜牌就在眼前！';msg.style.background='#fff3cd';msg.style.color='#e67e22';}
+    else if(total<28){msg.textContent='🥉 铜牌达成！冲击银牌！';msg.style.background='#ffecd2';msg.style.color='#cd7f32';}
+    else if(total<35){msg.textContent='🥈 银牌英雄！满星就差一点！';msg.style.background='#f0f0f0';msg.style.color='#888';}
+    else{msg.textContent='🥇🎉 满星冠军！你是最棒的！！';msg.style.background='linear-gradient(135deg,#ffd93d,#f093fb)';msg.style.color='#333';}
+    updateRewards();
+}
+
+// ==================== REWARDS ====================
+function updateRewards() {
+    const wk=getWeekKey(currentWeekOffset), total=countWeekStars(wk);
+    const bar=(id,th)=>{document.getElementById(id).style.width=Math.min(100,(total/th)*100)+'%';};
+    const st=(id,th)=>{const e=document.getElementById(id);if(total>=th){e.textContent='🎉 已达成！';e.style.color='#27ae60';}else{e.textContent=`还差 ${th-total} 颗星`;e.style.color='#999';}};
+    bar('bronzeBar',21); bar('silverBar',28); bar('goldBar',35);
+    st('bronzeStatus',21); st('silverStatus',28); st('goldStatus',35);
+}
+
+// ==================== DATA EXPORT/IMPORT ====================
+function exportData() {
+    const all={};
+    for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('starPlan_')||k.startsWith('adv_'))all[k]=JSON.parse(localStorage.getItem(k));}
+    const b=new Blob([JSON.stringify(all,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+    a.download='小星星学习记录_'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+}
+function importData() {
+    const inp=document.createElement('input'); inp.type='file'; inp.accept='.json';
+    inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+    r.onload=ev=>{try{const d=JSON.parse(ev.target.result);Object.keys(d).forEach(k=>localStorage.setItem(k,JSON.stringify(d[k])));renderTracking();initAdventure();alert('✅ 导入成功！');}catch(e){alert('❌ 导入失败');}};r.readAsText(f);}; inp.click();
+}
+
+// ==================== iPAD ====================
+function checkiPad() {
+    const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isIOS&&!window.navigator.standalone&&!localStorage.getItem('starPlan_bannerDismissed'))
+        document.getElementById('ipadBanner').classList.add('show');
+}
+function closeBanner() { document.getElementById('ipadBanner').classList.remove('show'); localStorage.setItem('starPlan_bannerDismissed','true'); }
+
+// ==================== INIT ====================
+(function init(){
+    const day = new Date().getDay();
+    adv.dayType = (day===0||day===6) ? 'weekend' : 'weekday';
+    document.getElementById('btnWeekday').classList.toggle('active', adv.dayType==='weekday');
+    document.getElementById('btnWeekend').classList.toggle('active', adv.dayType==='weekend');
+    initAdventure();
+    renderTracking();
+    checkiPad();
+})();
+</script>
+</body>
+</html>
