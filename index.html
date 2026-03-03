@@ -885,14 +885,14 @@ function updateTimer() {
         disp.className = 'adv-step-timer overtime';
     }
 
-    // Study steps: voice warning at 30 seconds remaining
-    if (step.type === 'study' && remain <= 30 && remain > 28 && !adv.warned30[idx]) {
+    // All steps: voice warning at 30 seconds remaining
+    if (remain <= 30 && remain > 28 && !adv.warned30[idx]) {
         adv.warned30[idx] = true;
         const n = Math.floor(Math.random()*5) + 1;
         playAudio('warn30_' + n);
     }
 
-    // Break (fixed type with "break" id) and free steps: voice warning at 2 minutes remaining, repeat 3 times
+    // Break and free steps: voice warning at 2 minutes remaining, repeat 3 times louder
     const isBreakOrFree = (step.type === 'free') || (step.type === 'fixed' && /^break/.test(step.id));
     if (isBreakOrFree && remain <= 120 && remain > 118 && !adv.warned2m[idx]) {
         adv.warned2m[idx] = true;
