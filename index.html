@@ -917,15 +917,22 @@ function showEncouragement(step, doneIdx, nextIdx) {
         const elapsed = adv.elapsed[doneIdx];
         const planned = step.min * 60;
         const diff = planned - elapsed;
+        let timeReport = '';
         if (diff > 10) {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，省下了 ${fmtSec(diff)}！💚`;
             playAudio('early_' + (Math.floor(Math.random()*8) + 1));
+            timeReport = `叶柠萱，${step.name}用了${fmtSec(elapsed)}，比计划快了${fmtSec(diff)}！效率真高！`;
         } else if (diff >= -10) {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，正好按时完成！👍`;
             playAudio('ontime_' + (Math.floor(Math.random()*6) + 1));
+            timeReport = `叶柠萱，${step.name}用了${fmtSec(elapsed)}，刚刚好按时完成！棒棒的！`;
         } else {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，超时了 ${fmtSec(-diff)} 🔴`;
             playAudio('overtime_' + (Math.floor(Math.random()*4) + 1));
+            timeReport = `叶柠萱，${step.name}用了${fmtSec(elapsed)}，超时了${fmtSec(-diff)}，下次加油哦！`;
+        }
+        if (timeReport) {
+            setTimeout(() => speak(timeReport), 3500);
         }
     } else {
         playAudio('enc_' + (Math.floor(Math.random()*10) + 1));
@@ -1158,7 +1165,7 @@ function playStartChime() {
             const o=ctx.createOscillator(), g=ctx.createGain();
             o.connect(g); g.connect(ctx.destination);
             o.type='sine'; o.frequency.value=freq;
-            g.gain.setValueAtTime(0.25,ctx.currentTime+t);
+            g.gain.setValueAtTime(0.8,ctx.currentTime+t);
             g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+t+0.3);
             o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+0.3);
         });
@@ -1171,7 +1178,7 @@ function playEndChime() {
             const o=ctx.createOscillator(), g=ctx.createGain();
             o.connect(g); g.connect(ctx.destination);
             o.type='sine'; o.frequency.value=freq;
-            g.gain.setValueAtTime(0.3,ctx.currentTime+t);
+            g.gain.setValueAtTime(0.8,ctx.currentTime+t);
             g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+t+0.4);
             o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+0.4);
         });
