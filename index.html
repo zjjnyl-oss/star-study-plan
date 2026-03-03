@@ -920,19 +920,16 @@ function showEncouragement(step, doneIdx, nextIdx) {
         let timeReport = '';
         if (diff > 10) {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，省下了 ${fmtSec(diff)}！💚`;
-            playAudio('early_' + (Math.floor(Math.random()*8) + 1));
             timeReport = `叶柠萱，${step.name}用了${fmtSec(elapsed)}，比计划快了${fmtSec(diff)}！效率真高！`;
+            playAudio('early_' + (Math.floor(Math.random()*8) + 1), undefined, () => speak(timeReport));
         } else if (diff >= -10) {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，正好按时完成！👍`;
-            playAudio('ontime_' + (Math.floor(Math.random()*6) + 1));
             timeReport = `叶柠萱，${step.name}用了${fmtSec(elapsed)}，刚刚好按时完成！棒棒的！`;
+            playAudio('ontime_' + (Math.floor(Math.random()*6) + 1), undefined, () => speak(timeReport));
         } else {
             detail = `⏱️ 用时 ${fmtSec(elapsed)}，超时了 ${fmtSec(-diff)} 🔴`;
-            playAudio('overtime_' + (Math.floor(Math.random()*4) + 1));
             timeReport = `叶柠萱，${step.name}用了${fmtSec(elapsed)}，超时了${fmtSec(-diff)}，下次加油哦！`;
-        }
-        if (timeReport) {
-            setTimeout(() => speak(timeReport), 3500);
+            playAudio('overtime_' + (Math.floor(Math.random()*4) + 1), undefined, () => speak(timeReport));
         }
     } else {
         playAudio('enc_' + (Math.floor(Math.random()*10) + 1));
@@ -1089,14 +1086,15 @@ function testVoiceLong() {
 
 // Audio playback system: pre-recorded high-quality voices with browser TTS fallback
 let currentAudio = null;
-function playAudio(key, vol) {
+function playAudio(key, vol, onEnd) {
     try {
         if (currentAudio) { currentAudio.pause(); currentAudio = null; }
         const a = new Audio('voices/' + key + '.mp3');
         a.volume = (vol !== undefined) ? vol : 1;
         currentAudio = a;
-        a.play().catch(() => {});
-    } catch(e) {}
+        if (onEnd) a.onended = onEnd;
+        a.play().catch(() => { if (onEnd) onEnd(); });
+    } catch(e) { if (onEnd) onEnd(); }
 }
 
 function playAudioRepeat(key, times, vol) {
