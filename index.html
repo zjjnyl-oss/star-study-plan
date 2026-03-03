@@ -14,130 +14,7 @@
             font-family: 'Microsoft YaHei', 'PingFang SC', system-ui, sans-serif;
             background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ffecd2 100%);
             min-height: 100vh; color: #333;
-            position: relative;
         }
-
-        /* === Side photos for desktop === */
-        .bg-photo {
-            position: fixed; top: 0; bottom: 0; z-index: -2;
-            pointer-events: none;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .bg-photo img {
-            height: 92vh; width: auto; object-fit: contain;
-            border-radius: 18px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-            opacity: 0.88;
-        }
-        .bg-photo-left { left: 0; padding: 15px; }
-        .bg-photo-right { right: 0; padding: 15px; }
-        .bg-photo-right img { transform: scaleX(-1); }
-        @media (max-width:1350px) {
-            .bg-photo img { height: 80vh; }
-        }
-        @media (max-width:1150px) {
-            .bg-photo-right { display: none; }
-            .bg-photo img { height: 75vh; }
-        }
-        @media (max-width:1024px) {
-            .bg-photo { display: none; }
-        }
-
-        /* === Inline top photo for iPad portrait === */
-        .bg-photo-top { display: none; }
-
-        /* === iPad landscape: photo fixed on left, content shifts right === */
-        @media (min-width:1024px) and (max-width:1400px) and (orientation:landscape) {
-            .bg-photo-left {
-                display: flex; left: 0; padding: 10px; width: 27vw;
-            }
-            .bg-photo-left img {
-                height: 96vh; width: 100%; object-fit: contain;
-                border-radius: 14px;
-                box-shadow: 0 6px 24px rgba(0,0,0,0.2);
-                opacity: 0.92;
-            }
-            .bg-photo-right { display: none; }
-            .bg-photo-top { display: none; }
-            .header, .main, .ipad-banner, .bg-deco {
-                margin-left: 27vw;
-            }
-            .nav {
-                position: sticky; top: 0; z-index: 100;
-                margin-left: 27vw;
-            }
-            .main { max-width: none; padding: 15px 20px; }
-        }
-
-        /* === iPad portrait: photo as top banner === */
-        @media (min-width:600px) and (max-width:1024px) and (orientation:portrait) {
-            .bg-photo { display: none; }
-            .bg-photo-top {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 20px 20px 10px;
-                background: linear-gradient(180deg, rgba(102,126,234,0.1) 0%, transparent 100%);
-            }
-            .bg-photo-top img {
-                height: auto;
-                width: 55%;
-                max-width: 350px;
-                border-radius: 20px;
-                box-shadow: 0 8px 30px rgba(102,126,234,0.3), 0 4px 12px rgba(0,0,0,0.12);
-                border: 4px solid rgba(255,255,255,0.9);
-            }
-            .bg-photo-top .photo-caption {
-                margin-left: 20px;
-                text-align: center;
-                color: #764ba2;
-                font-weight: bold;
-            }
-            .bg-photo-top .photo-caption .cap-trophy { font-size: 2.5em; display: block; margin-bottom: 5px; }
-            .bg-photo-top .photo-caption .cap-text { font-size: 1.15em; line-height: 1.6; }
-        }
-
-        /* === Phone: small centered photo === */
-        @media (max-width:600px) {
-            .bg-photo { display: none; }
-            .bg-photo-top {
-                display: flex;
-                justify-content: center;
-                padding: 15px 15px 8px;
-            }
-            .bg-photo-top img {
-                height: auto;
-                width: 45%;
-                max-width: 200px;
-                border-radius: 16px;
-                box-shadow: 0 6px 20px rgba(102,126,234,0.25);
-                border: 3px solid rgba(255,255,255,0.9);
-            }
-            .bg-photo-top .photo-caption {
-                margin-left: 15px;
-                text-align: center;
-                color: #764ba2;
-                font-weight: bold;
-                display: flex; flex-direction: column; justify-content: center;
-            }
-            .bg-photo-top .photo-caption .cap-trophy { font-size: 2em; display: block; margin-bottom: 3px; }
-            .bg-photo-top .photo-caption .cap-text { font-size: 0.95em; line-height: 1.5; }
-        }
-
-        /* === Phone landscape: hide top photo, show side photo === */
-        @media (max-width:900px) and (orientation:landscape) {
-            .bg-photo-top { display: none; }
-        }
-
-        .bg-deco {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none; z-index: -1; overflow: hidden;
-        }
-        .bg-deco-trophy {
-            position: absolute; font-size: 4em; opacity: 0.12;
-            animation: floatDeco 8s ease-in-out infinite;
-        }
-        @keyframes floatDeco { 0%,100%{transform:translateY(0) rotate(-5deg)} 50%{transform:translateY(-20px) rotate(5deg)} }
 
         .header {
             text-align: center; padding: 20px;
@@ -145,7 +22,7 @@
             color: white; position: relative; overflow: hidden;
         }
         .header::before {
-            content: '✨🏆⭐🏆✨'; position: absolute; top: 5px; left: 50%;
+            content: '✨🌟⭐🌟✨'; position: absolute; top: 5px; left: 50%;
             transform: translateX(-50%); font-size: 16px; letter-spacing: 10px;
             animation: twinkle 2s ease-in-out infinite;
         }
@@ -374,11 +251,13 @@
         .week-nav button { padding:8px 18px; border:2px solid #764ba2; border-radius:20px; background:white; color:#764ba2; font-weight:bold; cursor:pointer; font-size:0.95em; transition:all 0.2s; font-family:inherit; }
         .week-nav button:hover { background:#764ba2; color:white; }
         .week-label { font-size:1.2em; font-weight:bold; color:#764ba2; min-width:200px; text-align:center; }
-        .tracking-table { width:100%; border-collapse:separate; border-spacing:4px; background:white; border-radius:20px; padding:10px; box-shadow:0 4px 15px rgba(0,0,0,0.08); }
+        .tracking-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:20px; }
+        .tracking-table { width:100%; min-width:500px; border-collapse:separate; border-spacing:4px; background:white; border-radius:20px; padding:10px; box-shadow:0 4px 15px rgba(0,0,0,0.08); table-layout:fixed; }
         .tracking-table th { padding:10px 4px; text-align:center; font-size:0.95em; color:#764ba2; }
+        .tracking-table th:first-child { width:22%; }
         .tracking-table td { padding:8px 4px; text-align:center; border-radius:12px; font-size:1em; }
         .tracking-table .row-label { text-align:left; font-weight:bold; font-size:0.9em; white-space:nowrap; padding-left:8px; }
-        .star-cell { cursor:pointer; font-size:1.5em; transition:all 0.2s; user-select:none; border-radius:12px; min-width:36px; }
+        .star-cell { cursor:pointer; font-size:1.5em; transition:all 0.2s; user-select:none; border-radius:12px; }
         .star-cell:hover { background:#fff3cd; transform:scale(1.1); }
         .star-cell.earned { animation:starPop 0.4s ease-out; }
         .weekly-summary { text-align:center; background:white; border-radius:20px; padding:20px; margin-top:20px; box-shadow:0 4px 15px rgba(0,0,0,0.08); }
@@ -430,7 +309,6 @@
             body { background:white!important; }
             .header { background:none!important; color:#333!important; border-bottom:3px solid #764ba2; }
             .header::before { display:none; }
-            .bg-photo,.bg-deco,.bg-photo-top { display:none!important; }
             .nav,.no-print { display:none!important; }
             .tab-content { display:block!important; page-break-after:always; }
             .tab-content:last-child { page-break-after:avoid; }
@@ -449,17 +327,10 @@
             .adv-step-timer { font-size:2.8em; }
             .vic-title { font-size:1.5em; }
         }
-        /* iPad portrait */
-        @media (min-width:601px) and (max-width:1024px) and (orientation:portrait) {
+        @media (min-width:601px) and (max-width:1024px) {
             .main { max-width:750px; }
             .star-cell { font-size:1.8em; padding:10px; min-width:44px; }
             .nav-btn { padding:12px 22px; font-size:1.05em; }
-        }
-        /* iPad landscape */
-        @media (min-width:1024px) and (max-width:1400px) and (orientation:landscape) {
-            .star-cell { font-size:1.8em; padding:10px; min-width:44px; }
-            .nav-btn { padding:12px 22px; font-size:1.05em; }
-            .adv-header h2 { font-size:1.3em; }
         }
         @media (pointer:coarse) {
             .star-cell { min-height:50px; display:flex; align-items:center; justify-content:center; }
@@ -469,33 +340,9 @@
 </head>
 <body>
 
-<div class="bg-photo bg-photo-left" aria-hidden="true">
-    <img src="bg.jpg" alt="">
-</div>
-<div class="bg-photo bg-photo-right" aria-hidden="true">
-    <img src="bg.jpg" alt="">
-</div>
-
-<div class="bg-deco" aria-hidden="true">
-    <span class="bg-deco-trophy" style="top:15%;left:5%;animation-delay:0s">🏆</span>
-    <span class="bg-deco-trophy" style="top:40%;right:3%;animation-delay:2s">⭐</span>
-    <span class="bg-deco-trophy" style="top:65%;left:8%;animation-delay:4s">🌟</span>
-    <span class="bg-deco-trophy" style="top:85%;right:6%;animation-delay:1s">🏆</span>
-    <span class="bg-deco-trophy" style="top:30%;left:50%;animation-delay:3s;font-size:3em">🥇</span>
-    <span class="bg-deco-trophy" style="top:55%;right:50%;animation-delay:5s;font-size:3em">✨</span>
-</div>
-
 <div class="header">
-    <h1>🏆 小星星学习冒险计划 🏆</h1>
+    <h1>⭐ 小星星学习冒险计划 ⭐</h1>
     <p>每天收集星星，成为最棒的自己！</p>
-</div>
-
-<div class="bg-photo-top no-print" aria-hidden="true">
-    <img src="bg.jpg" alt="">
-    <div class="photo-caption">
-        <span class="cap-trophy">🏆</span>
-        <span class="cap-text">叶柠萱小冠军<br>每天进步一点点！</span>
-    </div>
 </div>
 
 <div class="ipad-banner no-print" id="ipadBanner">
@@ -553,6 +400,7 @@
             <div class="week-label" id="weekLabel"></div>
             <button onclick="changeWeek(1)">下一周 ➡️</button>
         </div>
+        <div class="tracking-wrap">
         <table class="tracking-table"><thead><tr>
             <th style="text-align:left;padding-left:12px;">任务项目</th>
             <th>周一</th><th>周二</th><th>周三</th><th>周四</th><th>周五</th>
@@ -567,6 +415,7 @@
             <td id="dayTotal5" style="font-weight:bold;color:#2ed573">0</td>
             <td id="dayTotal6" style="font-weight:bold;color:#2ed573">0</td>
         </tr></tfoot></table>
+        </div>
         <div class="weekly-summary">
             <div>本周一共收集了</div>
             <div class="star-count" id="weeklyStarCount">0 <span>/ 35 ⭐</span></div>
