@@ -716,7 +716,9 @@ function renderAdventure() {
         html += `<span class="adv-step-emoji">${step.emoji}</span>`;
         html += `<span class="adv-step-name">${step.name}</span>`;
 
-        if (st==='completed' && step.type!=='free') {
+        const freeI = adv.steps.findIndex(s=>s.type==='free');
+        const affectsBank = step.type!=='free' && i < freeI;
+        if (st==='completed' && affectsBank) {
             const el = adv.elapsed[i], planned = step.min*60, diff = planned - el;
             const em = Math.floor(el/60), es = el%60;
             html += `<span class="adv-step-duration" style="background:#d5f5e3;color:#27ae60">⏱ ${em}:${String(es).padStart(2,'0')}</span>`;
@@ -818,7 +820,8 @@ function completeStep(idx) {
     adv.elapsed[idx] = elapsedSec;
     adv.status[idx] = 'completed';
 
-    if (step.type !== 'free') {
+    const freeStepIdx = adv.steps.findIndex(s => s.type === 'free');
+    if (step.type !== 'free' && idx < freeStepIdx) {
         const planned = step.min * 60;
         const diff = planned - elapsedSec;
         adv.timeBankSec += diff;
@@ -940,8 +943,9 @@ function showVictory() {
 
     let summary = '';
     let totalStudy = 0;
+    const freeI = adv.steps.findIndex(s => s.type==='free');
     adv.steps.forEach((s,i) => {
-        if (s.type === 'free') return;
+        if (s.type === 'free' || i > freeI) return;
         if (s.type === 'study') totalStudy += adv.elapsed[i];
         const planned = s.min*60, diff = planned - adv.elapsed[i];
         summary += `${s.emoji} ${s.name}：${fmtSec(adv.elapsed[i])}`;
