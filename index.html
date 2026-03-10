@@ -892,17 +892,17 @@ function updateTimer() {
     }
 
     // All steps: voice warning at 30 seconds remaining
-    if (remain <= 30 && remain > 28 && !adv.warned30[idx]) {
+    if (remain <= 30 && remain >= 0 && !adv.warned30[idx]) {
         adv.warned30[idx] = true;
         const n = Math.floor(Math.random()*5) + 1;
-        playAudio('warn30_' + n);
+        _forcePlayAudio('warn30_' + n);
     }
 
-    // Break and free steps: voice warning at 2 minutes remaining, repeat 3 times louder
+    // Break and free steps: voice warning at 2 minutes remaining, repeat 3 times
     const isBreakOrFree = (step.type === 'free') || (step.type === 'fixed' && /^break/.test(step.id));
-    if (isBreakOrFree && remain <= 120 && remain > 118 && !adv.warned2m[idx]) {
+    if (isBreakOrFree && remain <= 120 && remain >= 0 && !adv.warned2m[idx]) {
         adv.warned2m[idx] = true;
-        playAudioRepeat('warn2m', 3, 1);
+        _forcePlayRepeat('warn2m', 3);
     }
 }
 
@@ -1130,17 +1130,55 @@ function _processQueue() {
 function playAudioRepeat(key, times, vol) {
     try {
         if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+        audioPlaying = false;
+        audioQueue = [];
         let count = 0;
         function playNext() {
-            if (count >= times) return;
+            if (count >= times) { audioPlaying = false; return; }
+            audioPlaying = true;
             const a = new Audio('voices/' + key + '.mp3');
             a.volume = (vol !== undefined) ? vol : 1;
             currentAudio = a;
             a.onended = () => { count++; playNext(); };
-            a.play().catch(() => {});
+            a.play().catch(() => { audioPlaying = false; });
         }
         playNext();
-    } catch(e) {}
+    } catch(e) { audioPlaying = false; }
+}
+
+function _forcePlayAudio(key) {
+    try {
+        if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+        speechSynthesis.cancel();
+        audioPlaying = true;
+        audioQueue = [];
+        const a = new Audio('voices/' + key + '.mp3');
+        a.volume = 1;
+        currentAudio = a;
+        a.onended = () => { audioPlaying = false; currentAudio = null; };
+        a.onerror = () => { audioPlaying = false; currentAudio = null; };
+        a.play().catch(() => { audioPlaying = false; });
+    } catch(e) { audioPlaying = false; }
+}
+
+function _forcePlayRepeat(key, times) {
+    try {
+        if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+        speechSynthesis.cancel();
+        audioPlaying = true;
+        audioQueue = [];
+        let count = 0;
+        function playNext() {
+            if (count >= times) { audioPlaying = false; return; }
+            const a = new Audio('voices/' + key + '.mp3');
+            a.volume = 1;
+            currentAudio = a;
+            a.onended = () => { count++; playNext(); };
+            a.onerror = () => { audioPlaying = false; };
+            a.play().catch(() => { audioPlaying = false; });
+        }
+        playNext();
+    } catch(e) { audioPlaying = false; }
 }
 
 function speak(text, vol) {
