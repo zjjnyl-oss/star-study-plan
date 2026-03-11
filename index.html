@@ -801,6 +801,7 @@ function getFreeSec() {
 
 // ==================== STEP ACTIONS ====================
 function startStep(idx) {
+    unlockWarningAudio();
     adv.status[idx] = 'timing';
     adv.startTime[idx] = Date.now();
     adv.elapsed[idx] = 0;
@@ -824,6 +825,7 @@ function startStep(idx) {
 }
 
 function completeStep(idx) {
+    unlockWarningAudio();
     if (adv.timerHandle) { clearInterval(adv.timerHandle); adv.timerHandle = null; }
 
     const step = adv.steps[idx];
@@ -1146,39 +1148,72 @@ function playAudioRepeat(key, times, vol) {
     } catch(e) { audioPlaying = false; }
 }
 
-function _forcePlayAudio(key) {
+// iOS-compatible warning audio via Web Audio API
+let _warnCtx = null;
+let _warnBuffers = {};
+
+function unlockWarningAudio() {
+    if (_warnCtx) return;
     try {
-        if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-        speechSynthesis.cancel();
-        audioPlaying = true;
-        audioQueue = [];
-        const a = new Audio('voices/' + key + '.mp3');
-        a.volume = 1;
-        currentAudio = a;
-        a.onended = () => { audioPlaying = false; currentAudio = null; };
-        a.onerror = () => { audioPlaying = false; currentAudio = null; };
-        a.play().catch(() => { audioPlaying = false; });
-    } catch(e) { audioPlaying = false; }
+        _warnCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (_warnCtx.state === 'suspended') _warnCtx.resume();
+        const silence = _warnCtx.createBuffer(1, 1, 22050);
+        const src = _warnCtx.createBufferSource();
+        src.buffer = silence;
+        src.connect(_warnCtx.destination);
+        src.start(0);
+    } catch(e) {}
+    const keys = ['warn30_1','warn30_2','warn30_3','warn30_4','warn30_5','warn2m'];
+    keys.forEach(k => {
+        fetch('voices/' + k + '.mp3')
+            .then(r => r.arrayBuffer())
+            .then(buf => _warnCtx.decodeAudioData(buf))
+            .then(decoded => { _warnBuffers[k] = decoded; })
+            .catch(() => {});
+    });
+}
+
+function _playWarningBuffer(key, onEnd) {
+    if (_warnCtx && _warnBuffers[key]) {
+        try {
+            if (_warnCtx.state === 'suspended') _warnCtx.resume();
+            const src = _warnCtx.createBufferSource();
+            src.buffer = _warnBuffers[key];
+            const gain = _warnCtx.createGain();
+            gain.gain.value = 1;
+            src.connect(gain);
+            gain.connect(_warnCtx.destination);
+            if (onEnd) src.onended = onEnd;
+            src.start(0);
+            return true;
+        } catch(e) {}
+    }
+    return false;
+}
+
+function _forcePlayAudio(key) {
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+    audioPlaying = false;
+    audioQueue = [];
+    if (_playWarningBuffer(key)) return;
+    const txt = STUDY_30S_WARNINGS[Math.floor(Math.random()*STUDY_30S_WARNINGS.length)];
+    speak(txt);
 }
 
 function _forcePlayRepeat(key, times) {
-    try {
-        if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-        speechSynthesis.cancel();
-        audioPlaying = true;
-        audioQueue = [];
-        let count = 0;
-        function playNext() {
-            if (count >= times) { audioPlaying = false; return; }
-            const a = new Audio('voices/' + key + '.mp3');
-            a.volume = 1;
-            currentAudio = a;
-            a.onended = () => { count++; playNext(); };
-            a.onerror = () => { audioPlaying = false; };
-            a.play().catch(() => { audioPlaying = false; });
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+    audioPlaying = false;
+    audioQueue = [];
+    let count = 0;
+    function playNextBuffer() {
+        if (count >= times) return;
+        if (!_playWarningBuffer(key, () => { count++; playNextBuffer(); })) {
+            speakRepeat(BREAK_2M_WARNING, times);
         }
-        playNext();
-    } catch(e) { audioPlaying = false; }
+    }
+    playNextBuffer();
 }
 
 function speak(text, vol) {
